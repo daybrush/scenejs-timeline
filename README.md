@@ -1,7 +1,7 @@
 <p align="middle" ><img src="./demo/images/editor.png" width="100%" style="max-width: 800px"/></p>
 
 <h2 align="middle">Scene.js Timeline Editor</h2>
-<p align="middle"><a href="https://www.npmjs.com/package/@scenejs/timeline" target="_blank"><img src="https://img.shields.io/npm/v/@scenejs/timeline.svg?style=flat-square&color=007acc&label=version" alt="npm version" height="18"/></a> <img src="https://img.shields.io/badge/language-typescript-blue.svg?style=flat-square"/> <a href="https://github.com/daybrush/scenejs-timeline/blob/master/LICENSE" target="_blank"><img src="https://img.shields.io/github/license/daybrush/scenejs-timeline.svg?style=flat-square&label=license&color=08CE5D"/></a>
+<p align="middle"><a href="https://www.npmjs.com/package/@scenejs/timeline" target="_blank"><img src="https://img.shields.io/npm/v/@scenejs/timeline.svg?style=flat-square&color=007acc&label=version" alt="npm version" /></a> <img src="https://img.shields.io/badge/language-typescript-blue.svg?style=flat-square"/> <a href="https://github.com/daybrush/scenejs-timeline/blob/master/LICENSE" target="_blank"><img src="https://img.shields.io/github/license/daybrush/scenejs-timeline.svg?style=flat-square&label=license&color=08CE5D"/></a>
  <a href="https://github.com/daybrush/scenejs-timeline/tree/master/packages/react-scenejs-timeline/README.md" target="_blank"><img alt="React" src="https://img.shields.io/static/v1.svg?label=&message=React&style=flat-square&color=61dafb"></a>
  <a href="https://github.com/daybrush/scenejs-timeline/tree/master/packages/preact-timeline/README.md" target="_blank"><img alt="React" src="https://img.shields.io/static/v1.svg?label=&message=Preact&style=flat-square&color=673ab8"></a>
 </p>
@@ -14,7 +14,7 @@
 
 
 
-## ⚙️Installation
+## ⚙️ Installation
 ```sh
 $ npm i @scenejs/timeline
 ```
@@ -42,7 +42,7 @@ timeline.on("select", (e: SelectEvent) => {
 });
 ```
 
-## 📦Packages
+## 📦 Packages
 * [**react-scenejs-timeline**](https://github.com/daybrush/scenejs-timeline/tree/master/packages/react-scenejs-timeline): A React Component that control scene.js timeline.
 * [**preact-timeline**](https://github.com/daybrush/scenejs-timeline/tree/master/packages/preact-timeline): A Preact Component that control scene.js timeline.
 
