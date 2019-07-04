@@ -52,11 +52,11 @@ Please give a ⭐️ if this project helped you!
 
 ## 👏 Contributing
 
-If you have any questions or requests or want to contribute to `scenejs-timeline` or other packages, please write the issue or give me a Pull Request freely.
+If you have any questions or requests or want to contribute to `scenejs-timeline` or other packages, please write the [issue](https://github.com/daybrush/scenejs-timeline/issues) or give me a Pull Request freely.
 
 ## 🐞 Bug Report
 
-If you find a bug, please report to us opening a new [Issues](https://github.com/daybrush/scenejs-timeline/issues) on GitHub.
+If you find a bug, please report to us opening a new [Issue](https://github.com/daybrush/scenejs-timeline/issues) on GitHub.
 
 
 ## 📝 License
