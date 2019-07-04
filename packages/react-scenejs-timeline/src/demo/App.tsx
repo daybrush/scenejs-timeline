@@ -6,10 +6,12 @@ import Scene from "scenejs";
 import { ref } from "../react-scenejs-timeline/utils";
 import { poly } from "shape-svg";
 import "./App.css";
+import Editor from "../react-scenejs-timeline/Editor/Editor";
 
 export default class App extends Component<{}> {
     private scene: Scene = new Scene();
     private timeline!: Timeline;
+    private editor!: Editor;
     public render() {
         return (
             <div>
@@ -49,11 +51,15 @@ export default class App extends Component<{}> {
                         </div>
                     </div>
                 </div>
-                <Timeline
+                <Editor
+                    ref={ref(this, "editor")}
+                    scene={this.scene}
+                />
+                {/* <Timeline
                     ref={ref(this, "timeline")}
                     scene={this.scene}
                     style={{ maxHeight: "350px", position: "fixed", bottom: 0, left: 0, right: 0 }}
-                />
+                /> */}
             </div>);
     }
     public componentDidMount() {
@@ -82,6 +88,7 @@ export default class App extends Component<{}> {
             opacity: 0.2,
             fill: "#333", stroke: "#333",
         }, playBtn);
+
         document.querySelector(".play-btn")!.appendChild(playBtn);
         this.scene.load({
             ".play-btn": {
@@ -173,7 +180,7 @@ export default class App extends Component<{}> {
             },
             ".logo": {
                 0: {
-                    transform: "translate(-50%, -50%) rotate(0deg)",
+                    transform: "scale(1.2) translate(-50%, -50%) rotate(0deg)",
                 },
                 0.5: {
                     transform: "rotate(-15deg)",
@@ -215,6 +222,6 @@ export default class App extends Component<{}> {
                 iterationCount: 1,
                 selector: true,
             });
-        this.timeline.update(true);
+        this.editor.update(true);
     }
 }

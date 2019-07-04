@@ -86,13 +86,13 @@ export function removeClass(target: Element, className: string) {
     return removeClass2(target, `${PREFIX}${className}`);
 }
 export function isScene(value: any): value is Scene {
-    return !!(value.constructor as typeof Scene).prototype.getItem;
+    return value && !!(value.constructor as typeof Scene).prototype.getItem;
 }
 export function isSceneItem(value: any): value is SceneItem {
-    return !!(value.constructor as typeof SceneItem).prototype.getFrame;
+    return value && !!(value.constructor as typeof SceneItem).prototype.getFrame;
 }
 export function isFrame(value: any): value is Frame {
-    return !!(value.constructor as typeof Frame).prototype.toCSS;
+    return value && !!(value.constructor as typeof Frame).prototype.toCSS;
 }
 export function splitProperty(scene: Scene, property: string) {
     const names = property.split("///");
@@ -129,8 +129,8 @@ export function findElementIndexByPosition(elements: HTMLElement[], pos: number)
     });
 }
 
-export function prefix(className: string) {
-    return className.split(" ").map(name => `${PREFIX}${name}`).join(" ");
+export function prefix(...classNames: string[]) {
+    return classNames.map(className => className.split(" ").map(name => `${PREFIX}${name}`).join(" ")).join(" ");
 }
 export function ref(target: any, name: string) {
     return (e: any) => {
