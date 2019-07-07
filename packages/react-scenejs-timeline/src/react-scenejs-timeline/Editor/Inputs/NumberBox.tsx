@@ -1,8 +1,9 @@
 import * as React from "react";
 import Input from "./Input";
-import { ref, prefix } from "../../utils";
+import { prefix } from "../../utils";
 import TextBox from "./TextBox";
 import { isUndefined } from "@daybrush/utils";
+import { ref } from "framework-utils";
 
 export default class NumberBox extends TextBox {
     public render() {

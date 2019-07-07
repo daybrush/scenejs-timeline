@@ -1,9 +1,10 @@
 import { TimelineInfo } from "../../types";
 import Property from "./Property";
 import * as React from "react";
-import { prefix, refs, checkFolded } from "../../utils";
+import { prefix, checkFolded } from "../../utils";
 import ElementComponent from "../../utils/ElementComponent";
 import { IObject } from "@daybrush/utils";
+import { refs } from "framework-utils";
 
 export default class PropertiesArea extends ElementComponent<{
     timelineInfo: TimelineInfo,

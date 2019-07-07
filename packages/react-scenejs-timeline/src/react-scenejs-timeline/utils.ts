@@ -8,6 +8,7 @@ import {
     isObject,
     findIndex,
 } from "@daybrush/utils";
+import { prefixNames } from "framework-utils";
 import ElementComponent from "./utils/ElementComponent";
 
 export function numberFormat(num: number, count: number, isRight?: boolean) {
@@ -130,17 +131,7 @@ export function findElementIndexByPosition(elements: HTMLElement[], pos: number)
 }
 
 export function prefix(...classNames: string[]) {
-    return classNames.map(className => className.split(" ").map(name => `${PREFIX}${name}`).join(" ")).join(" ");
-}
-export function ref(target: any, name: string) {
-    return (e: any) => {
-        e && (target[name] = e);
-    };
-}
-export function refs(target: any, name: string, i: number) {
-    return (e: any) => {
-        e && (target[name][i] = e);
-    };
+    return prefixNames(PREFIX, ...classNames);
 }
 
 export function checkFolded(foldedInfo: IObject<any>, names: any[]) {

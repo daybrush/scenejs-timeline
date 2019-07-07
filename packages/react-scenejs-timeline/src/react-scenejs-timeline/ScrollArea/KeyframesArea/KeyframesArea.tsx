@@ -2,12 +2,13 @@ import { TimelineInfo } from "../../types";
 import Keyframes from "./Keyframes";
 import LineArea from "./LineArea";
 import * as React from "react";
-import { prefix, ref, refs, checkFolded } from "../../utils";
+import { prefix, checkFolded } from "../../utils";
 import ElementComponent from "../../utils/ElementComponent";
 import Axes from "@egjs/axes";
 import KeyController from "keycon";
 import { addEvent, IObject } from "@daybrush/utils";
 import KeyframeCursor from "./KeyframeCursor";
+import { refs, ref } from "framework-utils";
 
 export default class KeyframesArea extends ElementComponent<{
     timelineInfo: TimelineInfo,

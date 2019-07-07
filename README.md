@@ -61,7 +61,7 @@ If you find a bug, please report to us opening a new [Issue](https://github.com/
 
 ## 📝 License
 
-This project is [MIT](https://github.com/daybrush/scenejs-timeline/blob/master/README.md) licensed.
+This project is [MIT](https://github.com/daybrush/scenejs-timeline/blob/master/LICENSE) licensed.
 
 ```
 MIT License

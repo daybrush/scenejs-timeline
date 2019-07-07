@@ -1,11 +1,12 @@
 import { DirectionType, FillModeType } from "scenejs";
 import { IObject } from "@daybrush/utils";
+import { prefixCSS } from "framework-utils";
 
 export const PREFIX = `scenejs-editor-`;
 export const SUPPORT_POINTER_EVENTS = "PointerEvent" in window || "MSPointerEvent" in window;
 export const SUPPORT_TOUCH = "ontouchstart" in window;
 
-export const CSS = `
+export const CSS = prefixCSS(PREFIX, `
 {
     position: relative;
     width: 100%;
@@ -438,7 +439,7 @@ export const CSS = `
   height: 100%;
   transform: translate(-50%);
 }
-`.replace(/\.([^{,\s\d.]+)/g, `.${PREFIX}$1`);
+`);
 
 export const DURATION = "duration";
 export const FILL_MODE = "fillMode";
@@ -470,7 +471,7 @@ export const TICK_TIME = "tickTime";
 export const CURRENT_TIME = "currentTime";
 export const SELECTOR = "selector";
 export const TRANSFORM_NAME = "transform";
-export const INFOS_CSS = `
+export const INFOS_CSS = prefixCSS(PREFIX, `
 {
     position: fixed;
     right: 0;
@@ -643,9 +644,9 @@ export const INFOS_CSS = `
     top: 100%;
     z-index: 10;
 }
-`.replace(/\.([^{,\s\d.]+)/g, `.${PREFIX}$1`);
+`);
 
-export const MENUS_CSS = `
+export const MENUS_CSS = prefixCSS(PREFIX, `
 {
     position: fixed;
     left: 0;
@@ -680,7 +681,7 @@ export const MENUS_CSS = `
     background: transparent;
     border: 1px solid #eee;
 }
-`.replace(/\.([^{,\s\d.]+)/g, `.${PREFIX}$1`);
+`);
 
 export const DIRECTIONS: DirectionType[] = ["normal", "reverse", "alternate", "alternate-reverse"];
 export const FILL_MODES: FillModeType[] = ["forwards", "backwards", "both"];

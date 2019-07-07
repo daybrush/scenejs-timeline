@@ -7,7 +7,6 @@ import { SUPPORT_TOUCH, SUPPORT_POINTER_EVENTS, CSS } from "./consts";
 import {
     prefix,
     numberFormat,
-    ref,
     getTarget, findElementIndexByPosition,
     hasClass, flatObject, isScene,
 } from "./utils";
@@ -20,6 +19,7 @@ import { getTimelineInfo } from "./TimelineInfo";
 import { IObject, find, isUndefined, isObject } from "@daybrush/utils";
 import PureProps from "react-pure-props";
 import styled from "react-css-styler";
+import { ref } from "framework-utils";
 
 const TimelineElement = styled("div", CSS);
 

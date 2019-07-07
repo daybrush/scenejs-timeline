@@ -1,11 +1,12 @@
 import { TimelineInfo } from "../types";
 import * as React from "react";
-import { prefix, ref } from "../utils";
+import { prefix } from "../utils";
 import ElementComponent from "../utils/ElementComponent";
 import KeyframeCursor from "../ScrollArea/KeyframesArea/KeyframeCursor";
 import { addEvent } from "@daybrush/utils";
 import Axes from "@egjs/axes";
 import { drag } from "@daybrush/drag";
+import { ref } from "framework-utils";
 
 export default class KeytimesArea extends ElementComponent<{
     timelineInfo: TimelineInfo,

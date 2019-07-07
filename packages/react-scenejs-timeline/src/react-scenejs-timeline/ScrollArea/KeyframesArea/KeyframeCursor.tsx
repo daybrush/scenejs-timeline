@@ -1,6 +1,7 @@
 import * as React from "react";
 import ElementComponent from "../../utils/ElementComponent";
-import { ref, prefix } from "../../utils";
+import { prefix } from "../../utils";
+import { ref } from "framework-utils";
 
 export default class KeyframeCursor extends ElementComponent {
     public render() {

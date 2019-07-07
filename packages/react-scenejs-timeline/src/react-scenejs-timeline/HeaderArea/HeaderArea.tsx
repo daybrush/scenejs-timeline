@@ -2,9 +2,10 @@ import { TimelineInfo } from "../types";
 import ElementComponent from "../utils/ElementComponent";
 import KeytimesArea from "./KeytimesArea";
 import * as React from "react";
-import { prefix, ref } from "../utils";
+import { prefix } from "../utils";
 import Axes from "@egjs/axes";
 import Scene, { SceneItem } from "scenejs";
+import { ref } from "framework-utils";
 
 export default class HeaderArea extends ElementComponent<{
     timelineInfo: TimelineInfo,

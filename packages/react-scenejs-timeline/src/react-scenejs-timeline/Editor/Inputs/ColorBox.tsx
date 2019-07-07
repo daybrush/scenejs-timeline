@@ -1,9 +1,10 @@
 import * as React from "react";
 import { ChromePicker, ColorResult } from "react-color";
 import Input from "./Input";
-import { ref, prefix } from "../../utils";
+import { prefix } from "../../utils";
 import TextBox from "./TextBox";
 import { splitBracket } from "@daybrush/utils";
+import { ref } from "framework-utils";
 
 export default class ColorBox extends Input<{
     options: string[],

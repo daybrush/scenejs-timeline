@@ -3,10 +3,10 @@ import { Component } from "react";
 import * as React from "react";
 import Timeline from "../react-scenejs-timeline";
 import Scene from "scenejs";
-import { ref } from "../react-scenejs-timeline/utils";
 import { poly } from "shape-svg";
 import "./App.css";
 import Editor from "../react-scenejs-timeline/Editor/Editor";
+import { ref } from "framework-utils";
 
 export default class App extends Component<{}> {
     private scene: Scene = new Scene();

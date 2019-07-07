@@ -1,8 +1,9 @@
 import { PropertiesInfo } from "../../types";
 import * as React from "react";
-import { prefix, ref } from "../../utils";
+import { prefix } from "../../utils";
 import Scene, { SceneItem } from "scenejs";
 import ElementComponent from "../../utils/ElementComponent";
+import { ref } from "framework-utils";
 
 export default class Value extends ElementComponent<{
     id: string,

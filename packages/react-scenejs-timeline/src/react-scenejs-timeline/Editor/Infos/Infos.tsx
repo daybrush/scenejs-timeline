@@ -1,5 +1,5 @@
 import * as React from "react";
-import { prefix, ref, isSceneItem } from "../../utils";
+import { prefix, isSceneItem } from "../../utils";
 import Options from "./Options";
 import Properties from "./Properties";
 import Scene, { SceneItem } from "scenejs";
@@ -8,6 +8,7 @@ import { IObject } from "@daybrush/utils";
 import styler from "react-css-styler";
 import { INFOS_CSS } from "../../consts";
 import { SelectEvent } from "../../types";
+import { ref } from "framework-utils";
 
 const InfosElement = styler("div", INFOS_CSS);
 

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { getKey } from "keycon";
 import Input from "./Input";
-import { ref } from "../../utils";
+import { ref } from "framework-utils";
 
 export default class TextBox extends Input<{
     onFocus?: () => void,

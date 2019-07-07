@@ -1,12 +1,13 @@
 import { TimelineInfo } from "../../types";
 import Value from "./Value";
 import * as React from "react";
-import { prefix, refs, checkFolded, getTarget, hasClass } from "../../utils";
+import { prefix, checkFolded, getTarget, hasClass } from "../../utils";
 import ElementComponent from "../../utils/ElementComponent";
 import { IObject, findIndex } from "@daybrush/utils";
 import Scene, { SceneItem } from "scenejs";
 import { drag } from "@daybrush/drag";
 import KeyController from "keycon";
+import { refs } from "framework-utils";
 
 export default class ValuesArea extends ElementComponent<{
     timelineInfo: TimelineInfo,

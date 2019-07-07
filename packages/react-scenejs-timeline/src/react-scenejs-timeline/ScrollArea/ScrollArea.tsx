@@ -4,10 +4,11 @@ import KeyframesArea from "./KeyframesArea/KeyframesArea";
 import PropertiesArea from "./PropertiesArea/PropertiesArea";
 import ValuesArea from "./ValuesArea/ValuesArea";
 import * as React from "react";
-import { prefix, ref, fold, getTarget, hasClass } from "../utils";
+import { prefix, fold, getTarget, hasClass } from "../utils";
 import Axes from "@egjs/axes";
 import KeyController from "keycon";
 import Scene, { SceneItem } from "scenejs";
+import { ref } from "framework-utils";
 
 export default class ScrollArea extends ElementComponent<{
     timelineInfo: TimelineInfo,

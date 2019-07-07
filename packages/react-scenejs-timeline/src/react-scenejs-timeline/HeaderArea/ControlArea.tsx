@@ -1,8 +1,9 @@
 import * as React from "react";
-import { prefix, ref } from "../utils";
+import { prefix } from "../utils";
 import ElementComponent from "../utils/ElementComponent";
 import TimeArea from "./TimeArea";
 import Scene, { SceneItem } from "scenejs";
+import { ref } from "framework-utils";
 
 export default class ControlArea extends ElementComponent<{
     scene?: Scene | SceneItem,

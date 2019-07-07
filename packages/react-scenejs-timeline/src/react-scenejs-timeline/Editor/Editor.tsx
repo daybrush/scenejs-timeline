@@ -1,22 +1,29 @@
 import * as React from "react";
 import Timeline from "../Timeline";
 import Scene, { SceneItem } from "scenejs";
-import { ref } from "../utils";
 import Infos from "./Infos/Infos";
 import Menus from "./Menus/Menus";
-import MenuControl from "./Menus/MenuControl";
 import { SelectEvent } from "../types";
+import { ref } from "framework-utils";
 
 export default class Editor extends React.Component<{
     scene: Scene | SceneItem,
+}, {
+    selectedTarget: HTMLElement | null,
 }> {
+    public state: {
+        selectedTarget: HTMLElement | null,
+    } = {
+        selectedTarget: null,
+    };
     private infos!: Infos;
     private timeline!: Timeline;
     public render() {
+        const selectedTarget = this.state.selectedTarget;
+
         return (
             <div className="scenejs-editor">
                 <Menus />
-                <MenuControl />
                 <Infos
                     ref={ref(this, "infos")}
                     onUpdate={this.onUpdate}
