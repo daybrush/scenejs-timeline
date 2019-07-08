@@ -5,6 +5,7 @@ import Infos from "./Infos/Infos";
 import Menus from "./Menus/Menus";
 import { SelectEvent } from "../types";
 import { ref } from "framework-utils";
+import Moveable from "react-moveable";
 
 export default class Editor extends React.Component<{
     scene: Scene | SceneItem,
@@ -14,16 +15,20 @@ export default class Editor extends React.Component<{
     public state: {
         selectedTarget: HTMLElement | null,
     } = {
-        selectedTarget: null,
-    };
+            selectedTarget: null,
+        };
     private infos!: Infos;
     private timeline!: Timeline;
+    private editorElement!: HTMLElement;
+    private moveable!: Moveable;
+
     public render() {
         const selectedTarget = this.state.selectedTarget;
 
         return (
-            <div className="scenejs-editor">
+            <div className="scenejs-editor" ref={ref(this, "editorElement")}>
                 <Menus />
+                <Moveable target={selectedTarget} ref={ref(this, "moveable")} />
                 <Infos
                     ref={ref(this, "infos")}
                     onUpdate={this.onUpdate}
@@ -48,6 +53,21 @@ export default class Editor extends React.Component<{
             selectedName: "",
         });
         this.checkScene(undefined, this.props.scene);
+
+        document.body.addEventListener("mousedown", e => {
+            const target = e.target as HTMLElement;
+
+            if (this.editorElement.contains(target)) {
+                return;
+            }
+            if (this.state.selectedTarget === target) {
+                this.moveable.updateRect();
+            } else {
+                this.setState({
+                    selectedTarget: target,
+                });
+            }
+        });
     }
     public componentDidUpdate(prevProps: any) {
         this.checkScene(prevProps.scene, this.props.scene);
