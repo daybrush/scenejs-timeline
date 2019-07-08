@@ -55,8 +55,11 @@ export default class Editor extends React.Component<{
         this.checkScene(undefined, this.props.scene);
 
         document.body.addEventListener("mousedown", e => {
-            const target = e.target as HTMLElement;
+            let target = e.target as HTMLElement;
 
+            if ((target as any).ownerSVGElement) {
+                target = (target as any).ownerSVGElement;
+            }
             if (this.editorElement.contains(target)) {
                 return;
             }
