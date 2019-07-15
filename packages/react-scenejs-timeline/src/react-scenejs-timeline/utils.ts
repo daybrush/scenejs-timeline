@@ -162,3 +162,23 @@ export function fold(
         });
     }
 }
+
+export function findSceneItemByElement(element: HTMLElement | SVGElement, scene: Scene | SceneItem) {
+    let target: SceneItem | null = null;
+
+    if (isScene(scene)) {
+        scene.forEach(item => {
+            if (target) {
+                return;
+            }
+            target = findSceneItemByElement(element, item);
+        });
+    } else {
+        const elements = scene.getElements();
+
+        if (elements.indexOf(element) > -1) {
+            return scene;
+        }
+    }
+    return target;
+}

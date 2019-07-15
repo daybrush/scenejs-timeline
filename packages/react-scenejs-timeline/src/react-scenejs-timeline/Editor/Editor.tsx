@@ -5,7 +5,7 @@ import Infos from "./Infos/Infos";
 import Menus from "./Menus/Menus";
 import { SelectEvent } from "../types";
 import { ref } from "framework-utils";
-import Moveable from "react-moveable";
+import Moveable, { OnDrag } from "react-moveable";
 
 export default class Editor extends React.Component<{
     scene: Scene | SceneItem,
@@ -28,7 +28,14 @@ export default class Editor extends React.Component<{
         return (
             <div className="scenejs-editor" ref={ref(this, "editorElement")}>
                 <Menus />
-                <Moveable target={selectedTarget} ref={ref(this, "moveable")} />
+                <Moveable
+                    target={selectedTarget}
+                    draggable={true}
+                    resizable={true}
+                    rotatable={true}
+                    container={document.body}
+                    onDrag={this.onDrag}
+                    ref={ref(this, "moveable")} />
                 <Infos
                     ref={ref(this, "infos")}
                     onUpdate={this.onUpdate}
@@ -71,6 +78,9 @@ export default class Editor extends React.Component<{
                 });
             }
         });
+        window.addEventListener("resize", () => {
+            this.moveable.updateRect();
+        });
     }
     public componentDidUpdate(prevProps: any) {
         this.checkScene(prevProps.scene, this.props.scene);
@@ -103,6 +113,9 @@ export default class Editor extends React.Component<{
         (document.activeElement as HTMLInputElement).blur();
 
         this.infos.select(e, this.timeline.getValues());
+    }
+    private onDrag = ({ target, transform }: OnDrag) => {
+        target.style.transform = transform;
     }
     private onUpdate = () => {
         this.update();
