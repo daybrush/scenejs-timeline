@@ -162,10 +162,29 @@ export function fold(
         });
     }
 }
+export function findSceneItemByElementStack(element: HTMLElement | SVGElement, scene: Scene | SceneItem):
+    [HTMLElement | SVGElement | null, Scene | SceneItem | null] {
+    let target: HTMLElement | SVGElement | null = element;
+    let item: Scene | SceneItem | null = null;
 
+    while (target && !item)  {
+        item = findSceneItemByElement(target, scene);
+
+        if (!item) {
+            target = target.parentElement;
+        }
+    }
+    if (!target || !item) {
+        return [null, null];
+    }
+    return [target, item];
+}
 export function findSceneItemByElement(element: HTMLElement | SVGElement, scene: Scene | SceneItem) {
     let target: SceneItem | null = null;
 
+    if (!scene) {
+        return null;
+    }
     if (isScene(scene)) {
         scene.forEach(item => {
             if (target) {

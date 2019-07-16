@@ -5,12 +5,13 @@ import Infos from "./Infos/Infos";
 import Menus from "./Menus/Menus";
 import { SelectEvent } from "../types";
 import { ref } from "framework-utils";
-import Moveable, { OnDrag } from "react-moveable";
+import Moveable, { OnDrag, OnResize } from "react-moveable";
+import { findSceneItemByElementStack } from "../utils";
 
 export default class Editor extends React.Component<{
     scene: Scene | SceneItem,
 }, {
-    selectedTarget: HTMLElement | null,
+    selectedTarget: HTMLElement | SVGElement | null,
 }> {
     public state: {
         selectedTarget: HTMLElement | null,
@@ -35,6 +36,7 @@ export default class Editor extends React.Component<{
                     rotatable={true}
                     container={document.body}
                     onDrag={this.onDrag}
+                    onResize={this.onReisze}
                     ref={ref(this, "moveable")} />
                 <Infos
                     ref={ref(this, "infos")}
@@ -62,7 +64,16 @@ export default class Editor extends React.Component<{
         this.checkScene(undefined, this.props.scene);
 
         document.body.addEventListener("mousedown", e => {
-            let target = e.target as HTMLElement;
+            const [parentElement, item]
+                = findSceneItemByElementStack(e.target as any, this.props.scene);
+
+            if (!parentElement || !item) {
+                return;
+            }
+
+            this.timeline.selectItem(item);
+
+            let target = parentElement;
 
             if ((target as any).ownerSVGElement) {
                 target = (target as any).ownerSVGElement;
@@ -114,8 +125,13 @@ export default class Editor extends React.Component<{
 
         this.infos.select(e, this.timeline.getValues());
     }
-    private onDrag = ({ target, transform }: OnDrag) => {
-        target.style.transform = transform;
+    private onReisze = ({ target, width, height }: OnResize) => {
+        target.style.width = `${width}px`;
+        target.style.height = `${height}px`;
+    }
+    private onDrag = ({ target, left, top }: OnDrag) => {
+        target.style.left = `${left}px`;
+        target.style.top = `${top}px`;
     }
     private onUpdate = () => {
         this.update();
