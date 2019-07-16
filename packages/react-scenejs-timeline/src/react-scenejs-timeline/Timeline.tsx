@@ -188,6 +188,18 @@ export default class Timeline extends PureProps<TimelineProps, TimelineState> {
 
         scene && scene.finish();
     }
+    public selectItem(scene: Scene | SceneItem) {
+        const { timelineInfo, selectedTime } = this.state;
+
+        for (const name in timelineInfo) {
+            const info = timelineInfo[name];
+            if (info.item === scene) {
+
+                this.select(info.key, selectedTime);
+                break;
+            }
+        }
+    }
     public togglePlay = () => {
         const scene = this.props.scene;
         if (!scene) {
