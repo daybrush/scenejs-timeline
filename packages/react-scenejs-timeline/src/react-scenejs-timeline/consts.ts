@@ -683,6 +683,23 @@ export const MENUS_CSS = prefixCSS(PREFIX, `
 }
 `);
 
+export const EDITOR_CSS = prefixCSS(PREFIX, `
+.label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 5px;
+    border-radius: 5px;
+    background: #333;
+    z-index: 3001;
+    color: #fff;
+    font-weight: bold;
+    font-size: 12px;
+    display: none;
+    transform: translate(-100%, -100%);
+}
+`);
+
 export const DIRECTIONS: DirectionType[] = ["normal", "reverse", "alternate", "alternate-reverse"];
 export const FILL_MODES: FillModeType[] = ["forwards", "backwards", "both"];
 

@@ -6,9 +6,13 @@ import Menus from "./Menus/Menus";
 import { SelectEvent } from "../types";
 import { ref } from "framework-utils";
 import Moveable, { OnDrag, OnResize } from "react-moveable";
-import { findSceneItemByElementStack } from "../utils";
+import { findSceneItemByElementStack, prefix } from "../utils";
+import styled, { StylerElement } from "react-css-styler";
+import { EDITOR_CSS } from "../consts";
 
-export default class Editor extends React.Component<{
+const EditorElement = styled("div", EDITOR_CSS);
+
+export default class Editor extends React.PureComponent<{
     scene: Scene | SceneItem,
 }, {
     selectedTarget: HTMLElement | SVGElement | null,
@@ -20,22 +24,26 @@ export default class Editor extends React.Component<{
         };
     private infos!: Infos;
     private timeline!: Timeline;
-    private editorElement!: HTMLElement;
+    private editorElement!: typeof EditorElement extends new (...args: any[]) => infer U ? U : never;
+    private labelElement!: HTMLDivElement;
     private moveable!: Moveable;
 
     public render() {
         const selectedTarget = this.state.selectedTarget;
 
         return (
-            <div className="scenejs-editor" ref={ref(this, "editorElement")}>
+            <EditorElement className="scenejs-editor" ref={ref(this, "editorElement")}>
+                <div className={prefix("label")} ref={ref(this, "labelElement")}></div>
                 <Menus />
                 <Moveable
                     target={selectedTarget}
                     draggable={true}
                     resizable={true}
                     rotatable={true}
+                    throttleDrag={1}
                     container={document.body}
                     onDrag={this.onDrag}
+                    onDragEnd={this.onDragEnd}
                     onResize={this.onReisze}
                     ref={ref(this, "moveable")} />
                 <Infos
@@ -54,7 +62,7 @@ export default class Editor extends React.Component<{
                     }}
                     onSelect={this.onSelect}
                 />
-            </div>);
+            </EditorElement>);
     }
     public componentDidMount() {
         this.infos.select({
@@ -78,7 +86,7 @@ export default class Editor extends React.Component<{
             if ((target as any).ownerSVGElement) {
                 target = (target as any).ownerSVGElement;
             }
-            if (this.editorElement.contains(target)) {
+            if (this.editorElement.getElement().contains(target)) {
                 return;
             }
             if (this.state.selectedTarget === target) {
@@ -117,6 +125,14 @@ export default class Editor extends React.Component<{
         }
         scene.off("animate", this.onAnimate);
     }
+    private setLabel(x: number, y: number, text: string) {
+        this.labelElement.style.cssText = `display:block;
+        transform:translate(-100%, -100%) translate(${x}px, ${y}px) translateZ(60px);`;
+        this.labelElement.innerHTML = text;
+    }
+    private hideLabel() {
+        this.labelElement.style.display = "none";
+    }
     private onAnimate = () => {
         this.infos.update(this.timeline.getValues());
     }
@@ -129,9 +145,14 @@ export default class Editor extends React.Component<{
         target.style.width = `${width}px`;
         target.style.height = `${height}px`;
     }
-    private onDrag = ({ target, left, top }: OnDrag) => {
+    private onDrag = ({ clientX, clientY, target, left, top }: OnDrag) => {
         target.style.left = `${left}px`;
         target.style.top = `${top}px`;
+        this.setLabel(clientX, clientY, `X: ${left}px<br/>Y: ${top}px`);
+    }
+    private onDragEnd = () => {
+        // history save
+        this.hideLabel();
     }
     private onUpdate = () => {
         this.update();
