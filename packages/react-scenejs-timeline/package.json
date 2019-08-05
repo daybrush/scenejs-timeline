@@ -54,7 +54,7 @@
     "keycon": "^0.3.0",
     "react-color": "^2.17.3",
     "react-css-styler": "^0.3.4",
-    "react-moveable": "^0.7.2",
+    "react-moveable": "^0.9.1",
     "react-pure-props": "^0.1.5",
     "scenejs": "^1.0.4"
   },

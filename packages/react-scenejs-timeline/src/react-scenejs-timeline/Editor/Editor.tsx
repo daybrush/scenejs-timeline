@@ -5,7 +5,7 @@ import Infos from "./Infos/Infos";
 import Menus from "./Menus/Menus";
 import { SelectEvent } from "../types";
 import { ref } from "framework-utils";
-import Moveable, { OnDrag, OnResize } from "react-moveable";
+import Moveable, { OnDrag, OnResize, OnRotate, OnRotateEnd } from "react-moveable";
 import { findSceneItemByElementStack, prefix } from "../utils";
 import styled, { StylerElement } from "react-css-styler";
 import { EDITOR_CSS } from "../consts";
@@ -42,8 +42,12 @@ export default class Editor extends React.PureComponent<{
                     rotatable={true}
                     throttleDrag={1}
                     container={document.body}
+                    // onDragStart={this.onDragStart}
+                    onRotate={this.onRotate}
+                    onRotateEnd={this.onRotateEnd}
                     onDrag={this.onDrag}
                     onDragEnd={this.onDragEnd}
+                    // onResizeStart={this.onResizeStart}
                     onResize={this.onReisze}
                     ref={ref(this, "moveable")} />
                 <Infos
@@ -141,9 +145,15 @@ export default class Editor extends React.PureComponent<{
 
         this.infos.select(e, this.timeline.getValues());
     }
-    private onReisze = ({ target, width, height }: OnResize) => {
+    private onReisze = ({ target, width, height, clientX, clientY }: OnResize) => {
         target.style.width = `${width}px`;
         target.style.height = `${height}px`;
+        this.setLabel(clientX, clientY, `W: ${width}px<br/>H: ${height}px`);
+    }
+    private onRotate = ({ target, beforeDelta, clientX, clientY }: OnRotate) => {
+        // target.style.width = `${width}px`;
+        // target.style.height = `${height}px`;
+        // this.setLabel(clientX, clientY, `W: ${width}px<br/>H: ${height}px`);
     }
     private onDrag = ({ clientX, clientY, target, left, top }: OnDrag) => {
         target.style.left = `${left}px`;
@@ -151,6 +161,14 @@ export default class Editor extends React.PureComponent<{
         this.setLabel(clientX, clientY, `X: ${left}px<br/>Y: ${top}px`);
     }
     private onDragEnd = () => {
+        // history save
+        this.hideLabel();
+    }
+    private onResizeEnd = () => {
+        // history save
+        this.hideLabel();
+    }
+    private onRotateEnd = ({ target, clientX, clientY }: OnRotateEnd) => {
         // history save
         this.hideLabel();
     }
