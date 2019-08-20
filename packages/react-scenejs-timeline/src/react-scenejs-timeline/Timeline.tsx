@@ -26,6 +26,7 @@ const TimelineElement = styled("div", CSS);
 export default class Timeline extends PureProps<TimelineProps, TimelineState> {
     public static defaultProps = {
         keyboard: true,
+        onSelect: () => {},
     };
     public headerArea!: HeaderArea;
     public controlArea!: ControlArea;
@@ -39,6 +40,7 @@ export default class Timeline extends PureProps<TimelineProps, TimelineState> {
         timelineInfo: {},
         selectedProperty: "",
         selectedTime: -1,
+        selectedItem: null,
         init: false,
         updateTime: false,
     };
@@ -318,16 +320,19 @@ export default class Timeline extends PureProps<TimelineProps, TimelineState> {
         }
         scene.pause();
         const state = this.state;
+        const {
+            selectedProperty: prevSelectedProperty,
+            selectedTime: prevSelectedTime,
+            selectedItem: prevSelectedItem,
+            timelineInfo,
+        } = state;
+        const propertiesInfo = timelineInfo[property]!;
+        const selectedItem = property ? propertiesInfo.item : this.props.scene!;
+        const selectedName = property ? propertiesInfo.names.join("///") : "";
 
         if (this.props.onSelect) {
-            const {
-                selectedProperty: prevSelectedProperty,
-                selectedTime: prevSelectedTime,
-                timelineInfo,
-            } = state;
-            const propertiesInfo = timelineInfo[property]!;
-            const selectedItem = property ? propertiesInfo.item : this.props.scene!;
-            const selectedName = property ? propertiesInfo.names.join("///") : "";
+
+
 
             this.props.onSelect({
                 selectedItem,
@@ -336,15 +341,18 @@ export default class Timeline extends PureProps<TimelineProps, TimelineState> {
                 selectedTime: time,
                 prevSelectedProperty,
                 prevSelectedTime,
+                prevSelectedItem,
             });
         }
         if (isNotUpdate) {
             state.selectedProperty = property;
             state.selectedTime = time;
+            state.selectedItem = selectedItem;
         } else {
             this.setState({
                 selectedProperty: property,
                 selectedTime: time,
+                selectedItem,
             });
         }
     }

@@ -3,10 +3,10 @@ import Timeline from "../Timeline";
 import Scene, { SceneItem } from "scenejs";
 import Infos from "./Infos/Infos";
 import Menus from "./Menus/Menus";
-import { SelectEvent } from "../types";
+import { SelectEvent, EditorState } from "../types";
 import { ref } from "framework-utils";
-import Moveable, { OnDrag, OnResize, OnRotate, OnRotateEnd } from "react-moveable";
-import { findSceneItemByElementStack, prefix } from "../utils";
+import Moveable, { OnDrag, OnResize, OnRotate, OnRotateEnd, OnRotateGroup } from "react-moveable";
+import { findSceneItemByElementStack, prefix, isSceneItem, isScene } from "../utils";
 import styled, { StylerElement } from "react-css-styler";
 import { EDITOR_CSS } from "../consts";
 
@@ -14,14 +14,12 @@ const EditorElement = styled("div", EDITOR_CSS);
 
 export default class Editor extends React.PureComponent<{
     scene: Scene | SceneItem,
-}, {
-    selectedTarget: HTMLElement | SVGElement | null,
-}> {
-    public state: {
-        selectedTarget: HTMLElement | null,
-    } = {
-            selectedTarget: null,
-        };
+}, EditorState> {
+    public state: EditorState = {
+        selectedFrame: null,
+        selectedItem: null,
+        selectedTarget: null,
+    };
     private infos!: Infos;
     private timeline!: Timeline;
     private editorElement!: typeof EditorElement extends new (...args: any[]) => infer U ? U : never;
@@ -45,6 +43,8 @@ export default class Editor extends React.PureComponent<{
                     // onDragStart={this.onDragStart}
                     onRotate={this.onRotate}
                     onRotateEnd={this.onRotateEnd}
+                    onRotateGroup={this.onRotateGroup}
+                    onRotateGroupEnd={this.onRotateGroupEnd}
                     onDrag={this.onDrag}
                     onDragEnd={this.onDragEnd}
                     // onResizeStart={this.onResizeStart}
@@ -93,13 +93,13 @@ export default class Editor extends React.PureComponent<{
             if (this.editorElement.getElement().contains(target)) {
                 return;
             }
-            if (this.state.selectedTarget === target) {
-                this.moveable.updateRect();
-            } else {
-                this.setState({
-                    selectedTarget: target,
-                });
-            }
+            // if (this.state.selectedTarget === target) {
+            //     this.moveable.updateRect();
+            // } else {
+            //     this.setState({
+            //         selectedTarget: target,
+            //     });
+            // }
         });
         window.addEventListener("resize", () => {
             this.moveable.updateRect();
@@ -139,16 +139,78 @@ export default class Editor extends React.PureComponent<{
     }
     private onAnimate = () => {
         this.infos.update(this.timeline.getValues());
+        this.moveable.updateRect();
+        const item = this.state.selectedItem;
+        if (item) {
+            this.state.selectedFrame = item.getNowFrame(item.getIterationTime());
+        }
     }
     private onSelect = (e: SelectEvent) => {
         (document.activeElement as HTMLInputElement).blur();
 
+        const isItem = isSceneItem(e.selectedItem);
+        const noneTarget = !e.selectedItem || !isItem;
+        if (noneTarget) {
+            this.setState({
+                selectedFrame: null,
+                selectedItem: null,
+                selectedTarget: null,
+            });
+        } else if (e.selectedItem) {
+            let targets = [];
+
+            if (isItem) {
+                targets = (e.selectedItem as SceneItem).getElements();
+            } else {
+                (e.selectedItem as Scene).forEach(function each(item: Scene | SceneItem) {
+                    if (isScene(item)) {
+                        item.forEach(each);
+                    } else {
+                        targets = targets.concat(item.getElements());
+                    }
+                });
+            }
+            if (e.selectedItem !== e.prevSelectedItem) {
+                const item = e.selectedItem as SceneItem;
+                this.setState({
+                    selectedItem: item,
+                    selectedTarget: targets,
+                    selectedFrame: item.getNowFrame(item.getIterationTime()),
+                });
+            } else {
+                this.moveable.updateRect();
+            }
+
+        }
         this.infos.select(e, this.timeline.getValues());
     }
     private onReisze = ({ target, width, height, clientX, clientY }: OnResize) => {
-        target.style.width = `${width}px`;
-        target.style.height = `${height}px`;
+        const selectedItem = this.state.selectedItem;
+
+        if (!selectedItem) {
+            return;
+        }
+        selectedItem.set("width", `${width}px`);
+        selectedItem.set("height", `${height}px`);
+        selectedItem.setTime(selectedItem.getTime());
         this.setLabel(clientX, clientY, `W: ${width}px<br/>H: ${height}px`);
+    }
+    private onRotateGroup = ({ target, beforeDelta, clientX, clientY }: OnRotateGroup) => {
+        const selectedItem = this.state.selectedItem;
+
+        if (!selectedItem) {
+            return;
+        }
+        const time = selectedItem.getIterationTime();
+        const rotate =
+            selectedItem.get(time, "transform", "rotate")
+            || this.state.selectedFrame!.get("transform", "rotate");
+
+        const rotation = parseFloat(rotate) || 0;
+
+        selectedItem.set(time, "transform", "rotate", `${rotation + beforeDelta}deg`);
+        selectedItem.setTime(selectedItem.getTime());
+        this.setLabel(clientX, clientY, `R: ${rotation + beforeDelta}deg`);
     }
     private onRotate = ({ target, beforeDelta, clientX, clientY }: OnRotate) => {
         // target.style.width = `${width}px`;
@@ -167,6 +229,11 @@ export default class Editor extends React.PureComponent<{
     private onResizeEnd = () => {
         // history save
         this.hideLabel();
+    }
+    private onRotateGroupEnd = () => {
+        // history save
+        this.hideLabel();
+        this.timeline.update();
     }
     private onRotateEnd = ({ target, clientX, clientY }: OnRotateEnd) => {
         // history save

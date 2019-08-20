@@ -1,4 +1,4 @@
-import Scene, { SceneItem } from "scenejs";
+import Scene, { SceneItem, Frame } from "scenejs";
 import { IObject } from "@daybrush/utils";
 import { HTMLAttributes } from "react";
 
@@ -7,6 +7,7 @@ export interface SelectEvent {
     selectedProperty: string;
     selectedName: string;
     selectedTime: number;
+    prevSelectedItem: Scene | SceneItem | null;
     prevSelectedProperty: string;
     prevSelectedTime: number;
 }
@@ -25,8 +26,14 @@ export interface TimelineState {
     timelineInfo: TimelineInfo;
     selectedProperty: string;
     selectedTime: number;
+    selectedItem: Scene | SceneItem | null;
     updateTime: boolean;
     init: boolean;
+}
+export interface EditorState {
+    selectedFrame: Frame | null;
+    selectedItem: SceneItem | null;
+    selectedTarget: HTMLElement | SVGElement | Array<HTMLElement | SVGElement> | null;
 }
 export interface PropertiesInfo {
     key: string;
