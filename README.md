@@ -1,4 +1,4 @@
-<p align="middle" ><img src="./demo/images/timeline.png" width="100%" style="max-width: 800px"/></p>
+<p align="middle" ><img src="./demo/images/logo.png" width="100%" style="max-width: 320px"/></p>
 
 <h2 align="middle">Scene.js Timeline Editor</h2>
 <p align="middle"><a href="https://www.npmjs.com/package/@scenejs/timeline" target="_blank"><img src="https://img.shields.io/npm/v/@scenejs/timeline.svg?style=flat-square&color=007acc&label=version" alt="npm version" /></a> <img src="https://img.shields.io/badge/language-typescript-blue.svg?style=flat-square"/> <a href="https://github.com/daybrush/scenejs-timeline/blob/master/LICENSE" target="_blank"><img src="https://img.shields.io/github/license/daybrush/scenejs-timeline.svg?style=flat-square&label=license&color=08CE5D"/></a>
@@ -10,6 +10,8 @@
 
 <p align="middle"><a href="https://github.com/daybrush/scenejs"><strong>Scene.js</strong></a> &nbsp;/&nbsp; <a href="https://daybrush.com/scenejs/features.html#timeline"><strong>Example</strong></a></p>
 
+
+<p align="middle" ><img src="./demo/images/timeline.png" width="100%" style="max-width: 800px"/></p>
 
 
 
