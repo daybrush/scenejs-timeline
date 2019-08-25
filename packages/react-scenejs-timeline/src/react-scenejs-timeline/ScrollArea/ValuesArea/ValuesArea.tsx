@@ -4,27 +4,26 @@ import * as React from "react";
 import { prefix, checkFolded, getTarget, hasClass } from "../../utils";
 import ElementComponent from "../../utils/ElementComponent";
 import { IObject, findIndex } from "@daybrush/utils";
-import Scene, { SceneItem } from "scenejs";
-import { drag } from "@daybrush/drag";
+import Dragger from "@daybrush/drag";
 import KeyController from "keycon";
 import { refs } from "framework-utils";
+import Timeline from "../../Timeline";
 
 export default class ValuesArea extends ElementComponent<{
     timelineInfo: TimelineInfo,
-    keycon: KeyController,
     selectedProperty: string,
-    add: (item: Scene | SceneItem, properties: string[]) => any,
-    setTime: (time?: number) => any,
-    editKeyframe: (index: number, value: any) => any,
+    timeline: Timeline,
 }, {
     foldedInfo: IObject<boolean>,
 }> {
+    public dragger!: Dragger;
     public values: Value[] = [];
     public state = {
         foldedInfo: {},
     };
+    private keycon!: KeyController;
     public render() {
-        const { timelineInfo, selectedProperty, add } = this.props;
+        const { timelineInfo, selectedProperty, timeline } = this.props;
         const { foldedInfo } = this.state;
         const values: JSX.Element[] = [];
         this.values = [];
@@ -36,7 +35,7 @@ export default class ValuesArea extends ElementComponent<{
 
             values.push(<Value
                 ref={refs(this, "values", values.length)}
-                add={add}
+                timeline={timeline}
                 key={id}
                 folded={folded}
                 selected={selected}
@@ -55,15 +54,15 @@ export default class ValuesArea extends ElementComponent<{
         let dragTargetValue: any;
 
         element.addEventListener("focusout", e => {
-            this.props.setTime();
+            this.props.timeline.setTime();
         });
-        drag(element, {
+        this.dragger = new Dragger(element, {
             container: window,
             dragstart: e => {
                 dragTarget = e.inputEvent.target;
                 dragTargetValue = dragTarget.value;
 
-                if (!this.props.keycon.altKey || !getTarget(dragTarget, el => el.nodeName === "INPUT")) {
+                if (!KeyController.global.altKey || !getTarget(dragTarget, el => el.nodeName === "INPUT")) {
                     return false;
                 }
             },
@@ -78,7 +77,7 @@ export default class ValuesArea extends ElementComponent<{
                 this.edit(dragTarget, dragTarget.value);
             },
         });
-        new KeyController(element)
+        this.keycon = new KeyController(element)
             .keydown(e => {
                 !e.isToggle && e.inputEvent.stopPropagation();
             })
@@ -96,6 +95,10 @@ export default class ValuesArea extends ElementComponent<{
                 target.blur();
             });
     }
+    public componentWillUnmount() {
+        this.dragger.unset();
+        this.keycon.off();
+    }
     private edit(target: HTMLInputElement, value: any) {
         const parentEl = getTarget(target, el => hasClass(el, "value"));
 
@@ -107,6 +110,6 @@ export default class ValuesArea extends ElementComponent<{
         if (index === -1) {
             return;
         }
-        this.props.editKeyframe(index, value);
+        this.props.timeline.editKeyframe(index, value);
     }
 }

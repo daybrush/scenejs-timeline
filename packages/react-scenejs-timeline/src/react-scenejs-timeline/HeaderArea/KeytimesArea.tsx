@@ -3,21 +3,21 @@ import * as React from "react";
 import { prefix } from "../utils";
 import ElementComponent from "../utils/ElementComponent";
 import KeyframeCursor from "../ScrollArea/KeyframesArea/KeyframeCursor";
-import { addEvent } from "@daybrush/utils";
-import Axes from "@egjs/axes";
-import { drag } from "@daybrush/drag";
+import { addEvent, removeEvent } from "@daybrush/utils";
+import Dragger from "@daybrush/drag";
 import { ref } from "framework-utils";
+import Timeline from "../Timeline";
 
 export default class KeytimesArea extends ElementComponent<{
+    timeline: Timeline,
     timelineInfo: TimelineInfo,
     maxTime: number,
     maxDuration: number,
     zoom: number,
-    axes: Axes,
-    move: (clientX: number) => void,
 }> {
     public scrollAreaElement!: HTMLElement;
     public cursor!: KeyframeCursor;
+    public dragger!: Dragger;
 
     public renderKeytimes() {
         const { maxTime } = this.props;
@@ -58,21 +58,27 @@ export default class KeytimesArea extends ElementComponent<{
             </div>
         );
     }
-    public componentDidMount() {
-        addEvent(this.getElement(), "wheel", e => {
-            const delta = e.deltaY;
+    public onWheel = (e: WheelEvent) => {
+        const timeline = this.props.timeline;
+        const delta = e.deltaY;
 
-            this.props.axes.setBy({ zoom: delta / 5000 });
-            !e.deltaX && e.preventDefault();
-        });
-        drag(this.cursor!.getElement(), {
+        timeline.setZoom(timeline.getZoom() + delta / 5000);
+        !e.deltaX && e.preventDefault();
+    }
+    public componentDidMount() {
+        addEvent(this.getElement(), "wheel", this.onWheel);
+        this.dragger = new Dragger(this.cursor!.getElement(), {
             dragstart: ({ inputEvent }) => {
                 inputEvent.stopPropagation();
             },
             drag: ({ clientX }) => {
-                this.props.move(clientX);
+                this.props.timeline.move(clientX);
             },
             container: window,
         });
+    }
+    public componentWillUnmount() {
+        removeEvent(this.getElement(), "wheel", this.onWheel);
+        this.dragger.unset();
     }
 }

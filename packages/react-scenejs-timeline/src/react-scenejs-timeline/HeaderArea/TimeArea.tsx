@@ -2,9 +2,10 @@ import * as React from "react";
 import { prefix } from "../utils";
 import ElementComponent from "../utils/ElementComponent";
 import KeyController from "keycon";
+import Timeline from "../Timeline";
 
 export default class TimeArea extends ElementComponent<{
-    setTime: (time: number) => any,
+    timeline: Timeline
 }, {}, HTMLInputElement> {
     public render() {
         return (
@@ -19,7 +20,7 @@ export default class TimeArea extends ElementComponent<{
         .keyup(e => {
             !e.isToggle && e.inputEvent.stopPropagation();
         })
-        .keyup("enter", e => {
+        .keyup("enter", () => {
             // go to time
             const value = (this.getElement() as HTMLInputElement).value;
             const result = /(\d+):(\d+):(\d+)/g.exec(value);
@@ -32,7 +33,7 @@ export default class TimeArea extends ElementComponent<{
             const milisecond = parseFloat(`0.${result[3]}`);
             const time = minute * 60 + second + milisecond;
 
-            this.props.setTime(time);
+            this.props.timeline.setTime(time);
         });
     }
 }

@@ -3,10 +3,8 @@ import { prefix } from "../../utils";
 import ElementComponent from "../../utils/ElementComponent";
 
 export default class Keyframe extends ElementComponent<{
-    id: string,
     time: number,
     maxTime: number,
-    iterationTime: number,
     value: string | undefined,
     selected: boolean,
 }> {

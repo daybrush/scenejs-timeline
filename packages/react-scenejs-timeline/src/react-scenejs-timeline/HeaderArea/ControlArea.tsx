@@ -4,14 +4,11 @@ import ElementComponent from "../utils/ElementComponent";
 import TimeArea from "./TimeArea";
 import Scene, { SceneItem } from "scenejs";
 import { ref } from "framework-utils";
+import Timeline from "../Timeline";
 
 export default class ControlArea extends ElementComponent<{
     scene?: Scene | SceneItem,
-    select: (property: string, time: number) => any,
-    setTime: (time: number) => any,
-    prev: () => any,
-    next: () => any,
-    togglePlay: () => any,
+    timeline: Timeline
 }, {
     isPlay: boolean,
 }> {
@@ -20,6 +17,8 @@ export default class ControlArea extends ElementComponent<{
         isPlay: false,
     };
     public render() {
+        const timeline = this.props.timeline;
+
         return (
             <div className={prefix("control-area header-area")}>
                 <div className={prefix("properties-area")} onClick={this.unselect}>
@@ -30,13 +29,13 @@ export default class ControlArea extends ElementComponent<{
                 </div>
                 <div className={prefix("keyframes-area")}>
                     <div className={prefix("keyframes")}>
-                        <TimeArea ref={ref(this, "timeArea")} setTime={this.props.setTime} />
+                        <TimeArea ref={ref(this, "timeArea")} timeline={timeline} />
                         <div className={prefix("play-control-area")}>
-                            <div className={prefix("control prev")} onClick={this.props.prev} />
+                            <div className={prefix("control prev")} onClick={this.prev} />
                             <div
                                 className={prefix("control " + (this.state.isPlay ? "pause" : "play"))}
-                                onClick={this.props.togglePlay} />
-                            <div className={prefix("control next")} onClick={this.props.next} />
+                                onClick={this.togglePlay} />
+                            <div className={prefix("control next")} onClick={this.next} />
                         </div>
                     </div>
                 </div>
@@ -77,7 +76,16 @@ export default class ControlArea extends ElementComponent<{
     private pause = () => {
         this.setState({ isPlay: false });
     }
+    private togglePlay = () => {
+        this.props.timeline.togglePlay();
+    }
+    private prev = () => {
+        this.props.timeline.prev();
+    }
+    private next = () => {
+        this.props.timeline.next();
+    }
     private unselect = () => {
-        this.props.select("", -1);
+        this.props.timeline.select("", -1);
     }
 }

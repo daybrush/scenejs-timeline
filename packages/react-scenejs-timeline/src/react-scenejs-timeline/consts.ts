@@ -3,8 +3,6 @@ import { IObject } from "@daybrush/utils";
 import { prefixCSS } from "framework-utils";
 
 export const PREFIX = `scenejs-editor-`;
-export const SUPPORT_POINTER_EVENTS = "PointerEvent" in window || "MSPointerEvent" in window;
-export const SUPPORT_TOUCH = "ontouchstart" in window;
 
 export const CSS = prefixCSS(PREFIX, `
 {
@@ -16,6 +14,7 @@ export const CSS = prefixCSS(PREFIX, `
     flex-direction: column;
 }
 * {
+    font-family: sans-serif;
     box-sizing: border-box;
     color: #fff;
 }
@@ -217,7 +216,7 @@ export const CSS = prefixCSS(PREFIX, `
 .value {
 
 }
-.alt .value input {
+:host.alt .value input {
     cursor: ew-resize;
 }
 .value[data-object="1"] input {
@@ -429,7 +428,7 @@ export const CSS = prefixCSS(PREFIX, `
   left: 15px;
   transform: translate(-50%);
 }
-.scroll-aare .keyframe-cursor {
+.scroll-area .keyframe-cursor {
   pointer-events: none;
 }
 .division-line {

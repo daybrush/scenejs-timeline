@@ -8,8 +8,8 @@
 		"jsdoc-format": false,
 		"forin": false,
 		"no-console": false,
-        "no-any": false,
-        "no-empty": false,
+		"no-any": false,
+		"no-empty": false,
 		"interface-name": false,
 		"indent": [
 			true,

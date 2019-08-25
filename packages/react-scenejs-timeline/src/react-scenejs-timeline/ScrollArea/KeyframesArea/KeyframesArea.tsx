@@ -4,19 +4,18 @@ import LineArea from "./LineArea";
 import * as React from "react";
 import { prefix, checkFolded } from "../../utils";
 import ElementComponent from "../../utils/ElementComponent";
-import Axes from "@egjs/axes";
-import KeyController from "keycon";
-import { addEvent, IObject } from "@daybrush/utils";
+import { IObject } from "@daybrush/utils";
 import KeyframeCursor from "./KeyframeCursor";
 import { refs, ref } from "framework-utils";
+import Timeline from "../../Timeline";
+import KeyController from "keycon";
 
 export default class KeyframesArea extends ElementComponent<{
     timelineInfo: TimelineInfo,
     maxTime: number,
     maxDuration: number,
     zoom: number,
-    axes: Axes,
-    keycon: KeyController,
+    timeline: Timeline,
     selectedProperty: string,
     selectedTime: number,
 }, {
@@ -56,7 +55,7 @@ export default class KeyframesArea extends ElementComponent<{
             );
         }
         return (
-            <div className={prefix("keyframes-area")}>
+            <div className={prefix("keyframes-area")} onWheel={this.onWheel}>
                 <div
                     className={prefix("keyframes-scroll-area")}
                     ref={ref(this, "scrollAreaElement")}
@@ -73,15 +72,15 @@ export default class KeyframesArea extends ElementComponent<{
             </div>
         );
     }
-    public componentDidMount() {
-        addEvent(this.getElement(), "wheel", e => {
-            if (!this.props.keycon.altKey) {
-                return;
-            }
-            e.preventDefault();
-            const delta = e.deltaY;
+    private onWheel = (e: any) => {
+        if (!KeyController.global.altKey) {
+            return;
+        }
+        e.preventDefault();
+        const delta = e.deltaY;
 
-            this.props.axes.setBy({ zoom: delta / 5000 });
-        });
+        const timeline = this.props.timeline;
+
+        timeline.setZoom(timeline.getZoom() + delta / 5000);
     }
 }

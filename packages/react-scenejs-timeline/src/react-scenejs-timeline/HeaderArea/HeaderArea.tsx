@@ -3,23 +3,19 @@ import ElementComponent from "../utils/ElementComponent";
 import KeytimesArea from "./KeytimesArea";
 import * as React from "react";
 import { prefix } from "../utils";
-import Axes from "@egjs/axes";
-import Scene, { SceneItem } from "scenejs";
 import { ref } from "framework-utils";
+import Timeline from "../Timeline";
 
 export default class HeaderArea extends ElementComponent<{
     timelineInfo: TimelineInfo,
     maxTime: number,
     maxDuration: number,
     zoom: number,
-    axes: Axes,
-    scene?: Scene | SceneItem,
-    add: (item?: Scene | SceneItem, properties?: string[]) => any,
-    move: (clientX: number) => void,
+    timeline: Timeline,
 }> {
     public keytimesArea!: KeytimesArea;
     public render() {
-        const { axes, timelineInfo, maxTime, maxDuration, zoom, move } = this.props;
+        const { timelineInfo, maxTime, maxDuration, zoom, timeline } = this.props;
         return (
             <div className={prefix("header-area")}>
                 <div className={prefix("properties-area")}>
@@ -27,13 +23,12 @@ export default class HeaderArea extends ElementComponent<{
                 </div>
                 <div className={prefix("values-area")}>
                     <div className={prefix("value")} >
-                        <div className={prefix("add")} onClick={this.add}>+</div>
+                        <div className={prefix("add")} onClick={this.openDialog}>+</div>
                     </div>
                 </div>
                 <KeytimesArea
                     ref={ref(this, "keytimesArea")}
-                    move={move}
-                    axes={axes}
+                    timeline={timeline}
                     timelineInfo={timelineInfo}
                     maxDuration={maxDuration}
                     maxTime={maxTime}
@@ -41,10 +36,7 @@ export default class HeaderArea extends ElementComponent<{
             </div>
         );
     }
-    private add = () => {
-        if (this.props.scene) {
-            return;
-        }
-        this.props.add();
+    private openDialog = () => {
+        this.props.timeline.openDialog();
     }
 }

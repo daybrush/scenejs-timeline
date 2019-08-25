@@ -1,16 +1,16 @@
 import { PropertiesInfo } from "../../types";
 import * as React from "react";
 import { prefix } from "../../utils";
-import Scene, { SceneItem } from "scenejs";
 import ElementComponent from "../../utils/ElementComponent";
 import { ref } from "framework-utils";
+import Timeline from "../..";
 
 export default class Value extends ElementComponent<{
     id: string,
     propertiesInfo: PropertiesInfo,
     folded: number,
     selected: boolean,
-    add: (item: Scene | SceneItem, properties: string[]) => any,
+    timeline: Timeline,
 }> {
     public inputElement!: HTMLInputElement;
     public render() {
@@ -46,12 +46,12 @@ export default class Value extends ElementComponent<{
     }
     private add = () => {
         const {
-            add,
             propertiesInfo: {
                 item,
                 properties,
             },
+            timeline,
         } = this.props;
-        add(item, properties);
+        timeline.openDialog(item, properties);
     }
 }

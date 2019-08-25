@@ -5,13 +5,11 @@ import Timeline from "../react-scenejs-timeline";
 import Scene from "scenejs";
 import { poly } from "shape-svg";
 import "./App.css";
-import Editor from "../react-scenejs-timeline/Editor/Editor";
 import { ref } from "framework-utils";
 
 export default class App extends Component<{}> {
     private scene: Scene = new Scene();
     private timeline!: Timeline;
-    private editor!: Editor;
     public render() {
         return (
             <div>
@@ -51,15 +49,11 @@ export default class App extends Component<{}> {
                         </div>
                     </div>
                 </div>
-                <Editor
-                    ref={ref(this, "editor")}
-                    scene={this.scene}
-                />
-                {/* <Timeline
+                <Timeline
                     ref={ref(this, "timeline")}
                     scene={this.scene}
                     style={{ maxHeight: "350px", position: "fixed", bottom: 0, left: 0, right: 0 }}
-                /> */}
+                />
             </div>);
     }
     public componentDidMount() {
@@ -222,6 +216,6 @@ export default class App extends Component<{}> {
                 iterationCount: 1,
                 selector: true,
             });
-        this.editor.update(true);
+        this.timeline.update(true);
     }
 }

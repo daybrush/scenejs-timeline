@@ -1,16 +1,19 @@
 import * as React from "react";
 import { prefix } from "../../utils";
 
-export default ({
-    maxTime,
-}: {
+export default class KeyframeLine extends React.PureComponent<{
     maxTime: number,
-}) => {
-    const lines = [];
-    for (let time = 0; time <= maxTime; ++time) {
-        lines.push(
-            <div className={prefix("division-line")} key={time} style={{ left: `${100 / maxTime * time}%` }}></div>,
-        );
+}> {
+    public render() {
+        const maxTime = this.props.maxTime;
+        const lines = [];
+        for (let time = 0; time <= maxTime; ++time) {
+            lines.push(
+                <div key={time}
+                    className={prefix("division-line")}
+                    style={{ left: `${100 / maxTime * time}%` }} />,
+            );
+        }
+        return (<div className={prefix("line-area")}>{lines}</div>);
     }
-    return (<div className={prefix("line-area")}>{lines}</div>);
-};
+}

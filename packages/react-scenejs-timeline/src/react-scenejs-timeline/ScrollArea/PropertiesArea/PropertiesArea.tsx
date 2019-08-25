@@ -5,10 +5,14 @@ import { prefix, checkFolded } from "../../utils";
 import ElementComponent from "../../utils/ElementComponent";
 import { IObject } from "@daybrush/utils";
 import { refs } from "framework-utils";
+import ScrollArea from "../ScrollArea";
+import Timeline from "../../Timeline";
 
 export default class PropertiesArea extends ElementComponent<{
     timelineInfo: TimelineInfo,
     selectedProperty: string,
+    timeline: Timeline,
+    scrollArea: ScrollArea,
 }, {
     foldedInfo: IObject<boolean>,
 }> {
@@ -17,23 +21,35 @@ export default class PropertiesArea extends ElementComponent<{
         foldedInfo: {},
     };
     public render() {
-        const { timelineInfo, selectedProperty } = this.props;
+        const {
+            timelineInfo,
+            selectedProperty,
+            timeline,
+            scrollArea,
+        } = this.props;
         const { foldedInfo } = this.state;
         const properties: JSX.Element[] = [];
 
         this.properties = [];
+        let index = -1;
+
         for (const id in timelineInfo) {
             const propertiesInfo = timelineInfo[id];
             const selected = selectedProperty === id;
             const folded = checkFolded(foldedInfo, propertiesInfo.keys);
 
+            ++index;
             properties.push(
                 <Property
-                    ref={refs(this, "properties", properties.length)}
+                    ref={refs(this, "properties", index)}
+                    timeline={timeline}
+                    scrollArea={scrollArea}
                     selected={selected}
                     folded={folded}
                     key={id}
-                    id={id} propertiesInfo={propertiesInfo} />,
+                    id={id}
+                    index={index}
+                    propertiesInfo={propertiesInfo} />,
             );
         }
 

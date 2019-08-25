@@ -1,8 +1,7 @@
 import * as React from "react";
 import { prefix } from "../../utils";
 
-export default class KeyframeGroup extends React.Component<{
-    id: string,
+export default class KeyframeGroup extends React.PureComponent<{
     time: number,
     nextTime: number,
     maxTime: number,

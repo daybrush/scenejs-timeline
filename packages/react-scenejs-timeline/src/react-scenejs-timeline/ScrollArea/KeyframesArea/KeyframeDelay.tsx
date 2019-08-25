@@ -1,7 +1,7 @@
 import * as React from "react";
 import { prefix } from "../../utils";
 
-export default class KeyframeDelay extends React.Component<{
+export default class KeyframeDelay extends React.PureComponent<{
     id: string,
     time: number,
     nextTime: number,

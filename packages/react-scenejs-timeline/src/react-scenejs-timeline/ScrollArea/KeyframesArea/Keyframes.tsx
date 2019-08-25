@@ -69,7 +69,6 @@ export default class Keyframes extends ElementComponent<{
             keyframeGroups.push(
                 <KeyframeGroup
                     key="group"
-                    id={`${time},${nextTime}`}
                     selected={selected && time <= selectedTime && selectedTime <= nextTime}
                     time={time}
                     nextTime={nextTime}
@@ -132,10 +131,8 @@ export default class Keyframes extends ElementComponent<{
             keyframes.push(
                 <Keyframe
                     key={`keyframe${i}`}
-                    id={`${time}`}
                     selected={selected && time === selectedTime}
                     time={time}
-                    iterationTime={iterationTime}
                     value={valueText}
                     maxTime={maxTime}
                 />,

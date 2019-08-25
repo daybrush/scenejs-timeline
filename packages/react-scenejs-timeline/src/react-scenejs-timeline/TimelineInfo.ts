@@ -7,7 +7,6 @@ import {
     REVERSE,
     ALTERNATE,
     ALTERNATE_REVERSE,
-    DURATION,
     INFINITE,
 } from "./consts";
 import { TimelineInfo } from "./types";

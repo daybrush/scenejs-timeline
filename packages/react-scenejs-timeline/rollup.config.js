@@ -2,14 +2,6 @@ import builder from "@daybrush/builder";
 
 const defaultOptions = {
     tsconfig: "tsconfig.build.json",
-    external: {
-        "@daybrush/utils": "utils",
-        "@daybrush/drag": "utils",
-        "@egjs/axes": "eg.Axes",
-        "react": "React",
-        "keycon": "KeyController",
-        "react-dom": "ReactDOM",
-    },
 };
 
 export default builder([
