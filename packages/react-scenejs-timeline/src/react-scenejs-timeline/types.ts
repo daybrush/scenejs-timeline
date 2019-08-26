@@ -30,11 +30,7 @@ export interface TimelineState {
     updateTime: boolean;
     init: boolean;
 }
-export interface EditorState {
-    selectedFrame: Frame | null;
-    selectedItem: SceneItem | null;
-    selectedTarget: HTMLElement | SVGElement | Array<HTMLElement | SVGElement> | null;
-}
+
 export interface PropertiesInfo {
     key: string;
     keys: Array<number | string>;
