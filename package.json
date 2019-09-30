@@ -1,0 +1,55 @@
+{
+  "name": "@scenejs/timeline",
+  "version": "0.2.2",
+  "description": "A library that represents the timeline of Scene.js. You can control time, properties, and items.",
+  "main": "./dist/timeline.cjs.js",
+  "module": "./dist/timeline.esm.js",
+  "sideEffects": false,
+  "types": "declaration/index.d.ts",
+  "scripts": {
+    "lint": "tslint -c tslint.json 'src/**/*.ts'",
+    "start": "rollup -c -w",
+    "build": "rollup -c && npm run declaration && print-sizes ./dist ",
+    "declaration": "rm -rf declaration && tsc -p tsconfig.declaration.json",
+    "release": "npm run build && release",
+    "release:init": "npm run build && release -i"
+  },
+  "keywords": [
+    "scene",
+    "scene.js",
+    "scenejs",
+    "css",
+    "animate",
+    "animation",
+    "requestAnimationFrame",
+    "motion",
+    "timeline"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daybrush/scenejs-timeline.git"
+  },
+  "author": "Daybrush",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/daybrush/scenejs-timeline/issues"
+  },
+  "homepage": "https://github.com/daybrush/scenejs-timeline#readme",
+  "dependencies": {
+    "@daybrush/drag": "^0.4.2",
+    "@daybrush/utils": "^0.10.0",
+    "@egjs/axes": "^2.5.13",
+    "@egjs/component": "^2.1.2",
+    "keycon": "^0.2.2",
+    "preact": "^8.4.2",
+    "preact-timeline": "^0.2.3",
+    "scenejs": "^1.0.0"
+  },
+  "devDependencies": {
+    "@daybrush/builder": "^0.1.0",
+    "@daybrush/release": "^0.2.4",
+    "print-sizes": "0.0.4",
+    "tslint": "^5.15.0",
+    "typescript": "^3.4.2"
+  }
+}
