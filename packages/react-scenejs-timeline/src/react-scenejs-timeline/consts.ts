@@ -1,6 +1,6 @@
 import { prefixCSS } from "framework-utils";
 
-export const PREFIX = `scenejs-editor-`;
+export const PREFIX = `scenejs-timeline-`;
 
 export const CSS = prefixCSS(PREFIX, `
 {
@@ -238,7 +238,7 @@ export const CSS = prefixCSS(PREFIX, `
   border-bottom: 1px solid #555;
   box-sizing: border-box;
   white-space: nowrap;
-  background: rgba(90, 90, 90, 0.7);
+  background: #333;
   z-index: 1;
 }
 

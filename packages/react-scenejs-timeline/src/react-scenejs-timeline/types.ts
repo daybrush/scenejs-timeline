@@ -30,16 +30,21 @@ export interface TimelineState {
     updateTime: boolean;
     init: boolean;
 }
-
+/**
+ * @typedef
+ * @property - key
+ * @property - key array
+ * @property - property names
+ */
 export interface PropertiesInfo {
     key: string;
-    keys: Array<number | string>;
-    parentItem: Scene;
-    item: Scene | SceneItem;
-    isParent: boolean;
+    keys: string[];
+    names: string[];
+
+    isScene: boolean;
     isItem: boolean;
-    names: Array<number | string>;
-    properties: string[];
-    frames: Array<[number, number, any]>;
+
+    parentScene?: Scene;
+    scene: Scene | SceneItem;
 }
 export type TimelineInfo = IObject<PropertiesInfo>;
