@@ -88,6 +88,7 @@ export default class App extends Component<{}> {
             ".play-btn": {
                 0: {
                     transform: "translate(-50%, -50%) scale(0)",
+                    width: "10px",
                 },
                 1: {
                     transform: "scale(1)",
@@ -212,10 +213,12 @@ export default class App extends Component<{}> {
                 },
             }),
         }, {
-                easing: "ease-in-out",
-                iterationCount: 1,
-                selector: true,
-            });
+            easing: "ease-in-out",
+            iterationCount: 1,
+            selector: true,
+        });
+
+        (window as any).a = this.timeline;
         this.timeline.update(true);
     }
 }

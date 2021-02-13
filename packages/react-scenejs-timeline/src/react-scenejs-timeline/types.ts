@@ -23,8 +23,8 @@ export interface TimelineState {
     alt: boolean;
     maxDuration: number;
     maxTime: number;
-    timelineInfo: TimelineInfo;
-    selectedProperty: string;
+    timelineInfo: TimelineInfo | null;
+    selectedKeys: string[];
     selectedTime: number;
     selectedItem: Scene | SceneItem | null;
     updateTime: boolean;
@@ -36,15 +36,36 @@ export interface TimelineState {
  * @property - key array
  * @property - property names
  */
-export interface PropertiesInfo {
+export interface ItemInfo {
     key: string;
-    keys: string[];
-    names: string[];
+    keys: Array<string | number>;
+    name: string | number;
+    names: Array<string | number>;
 
     isScene: boolean;
     isItem: boolean;
+    isFrame?: boolean;
 
     parentScene?: Scene;
     scene: Scene | SceneItem;
+    children: ItemInfo[];
+    frames: Keyframe[];
+    frameLines: FrameLine[];
 }
-export type TimelineInfo = IObject<PropertiesInfo>;
+export interface TimelineInfo {
+    infoMap: Record<string, ItemInfo>;
+    rootInfo: ItemInfo;
+}
+export interface FrameLine {
+    isDelay?: boolean;
+    startTime: number;
+    endTime: number;
+}
+export interface Keyframe {
+    isDelay?: boolean;
+    isScene?: boolean;
+    isItem?: boolean;
+    time: number;
+    iterationTime: number;
+    value: any;
+}

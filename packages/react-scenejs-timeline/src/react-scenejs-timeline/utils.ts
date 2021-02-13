@@ -1,15 +1,7 @@
 import {
-    ALTERNATE,
-    ALTERNATE_REVERSE,
-    DELAY,
-    DIRECTION,
-    INFINITE,
-    ITERATION_COUNT,
-    PLAY_SPEED,
     PREFIX,
-    REVERSE,
 } from "./consts";
-import Scene, { SceneItem, Frame, AnimatorState } from "scenejs";
+import Scene, { SceneItem, NAME_SEPARATOR, isScene, isSceneItem, AnimatorState, Frame, animate } from "scenejs";
 import {
     hasClass as hasClass2,
     addClass as addClass2,
@@ -21,7 +13,7 @@ import {
     isUndefined,
 } from "@daybrush/utils";
 import { prefixNames } from "framework-utils";
-import { TimelineInfo } from "./types";
+import { ItemInfo, TimelineInfo, Keyframe, FrameLine } from "./types";
 
 export function numberFormat(num: number, count: number, isRight?: boolean) {
     const length = `${num}`.length;
@@ -61,22 +53,6 @@ export function toValue(value: any): any {
     }
     return value;
 }
-export function flatObject(obj: IObject<any>, newObj: IObject<any> = {}) {
-    for (const name in obj) {
-        const value = obj[name];
-
-        if (isObject(value)) {
-            const nextObj = flatObject(isFrame(value) ? value.get() : value);
-
-            for (const nextName in nextObj) {
-                newObj[`${name}///${nextName}`] = nextObj[nextName];
-            }
-        } else {
-            newObj[name] = value;
-        }
-    }
-    return newObj;
-}
 
 export function getTarget<T extends HTMLElement>(
     target: T,
@@ -102,19 +78,8 @@ export function addClass(target: Element, className: string) {
 export function removeClass(target: Element, className: string) {
     return removeClass2(target, `${PREFIX}${className}`);
 }
-export function isScene(value: any): value is Scene {
-    return value && !!(value.constructor as typeof Scene).prototype.getItem;
-}
-export function isSceneItem(value: any): value is SceneItem {
-    return (
-        value && !!(value.constructor as typeof SceneItem).prototype.getFrame
-    );
-}
-export function isFrame(value: any): value is Frame {
-    return value && !!(value.constructor as typeof Frame).prototype.toCSS;
-}
 export function splitProperty(scene: Scene, property: string) {
-    const names = property.split("///");
+    const names = property.split(NAME_SEPARATOR);
     const length = names.length;
     let item: Scene | SceneItem = scene;
     let i;
@@ -158,7 +123,7 @@ export function prefix(...classNames: string[]) {
 export function checkFolded(foldedInfo: IObject<any>, names: any[]) {
     const index = findIndex(
         names,
-        (name, i) => foldedInfo[names.slice(0, i + 1).join("///") + "///"]
+        (name, i) => foldedInfo[names.slice(0, i + 1).join(NAME_SEPARATOR) + NAME_SEPARATOR]
     );
 
     if (index > -1) {
@@ -176,7 +141,7 @@ export function checkFolded(foldedInfo: IObject<any>, names: any[]) {
 //     foldedProperty: string,
 //     isNotUpdate?: boolean,
 // ) {
-//     const id = foldedProperty + "///";
+//     const id = foldedProperty + SEPARATOR;
 //     const foldedInfo = target.state.foldedInfo;
 
 //     foldedInfo[id] = !foldedInfo[id];
@@ -204,15 +169,17 @@ export function getEntries(times: number[], states: AnimatorState[]) {
     let entries = times.map((time) => [time, time]);
     let nextEntries: number[][] = [];
     const firstEntry = entries[0];
-    if (firstEntry[0] !== 0 && states[states.length - 1][DELAY]) {
+    if (firstEntry[0] !== 0 && states[states.length - 1].delay) {
         entries.unshift([0, 0]);
     }
 
     states.forEach((state) => {
-        const iterationCount = state[ITERATION_COUNT] as number;
-        const delay = state[DELAY];
-        const playSpeed = state[PLAY_SPEED];
-        const direction = state[DIRECTION];
+        const {
+            delay,
+            playSpeed,
+            direction,
+        } = state;
+        const iterationCount = state.iterationCount as number;
         const intCount = Math.ceil(iterationCount);
         const currentDuration = entries[entries.length - 1][0];
         const length = entries.length;
@@ -220,9 +187,9 @@ export function getEntries(times: number[], states: AnimatorState[]) {
 
         for (let i = 0; i < intCount; ++i) {
             const isReverse =
-                direction === REVERSE ||
-                (direction === ALTERNATE && i % 2) ||
-                (direction === ALTERNATE_REVERSE && !(i % 2));
+                direction === "reverse" ||
+                (direction === "alternate" && i % 2) ||
+                (direction === "alternate-reverse" && !(i % 2));
 
             for (let j = 0; j < length; ++j) {
                 const entry = entries[isReverse ? length - j - 1 : j];
@@ -278,105 +245,184 @@ export function getFiniteEntries(times: number[], states: AnimatorState[]) {
         findIndex(
             states,
             (state) => {
-                return state[ITERATION_COUNT] === INFINITE;
+                return state.iterationCount === "infinite";
             },
             states.length - 1
         ) + 1;
 
     return getEntries(times, states.slice(0, infiniteIndex));
 }
-// export function getItemInfo(
-//     timelineInfo: TimelineInfo,
-//     items: Array<Scene | SceneItem>,
-//     names: Array<string | number>,
-//     item: SceneItem
-// ) {
-//     item.update();
-//     const times = item.times.slice();
 
-//     const originalDuration = item.getDuration();
-//     !item.getFrame(0) && times.unshift(0);
-//     !item.getFrame(originalDuration) && times.push(originalDuration);
-//     const states = items
-//         .slice(1)
-//         .map((animator) => animator.state)
-//         .reverse();
-//     const entries = getFiniteEntries(times, states);
-//     const parentItem = items[items.length - 2] as Scene;
+export function getItemProperties(
+    infoMap: Record<string, ItemInfo>,
+    items: Array<Scene | SceneItem>,
+    itemNames: Array<string | number>,
+    item: SceneItem
+): ItemInfo[] {
+    item.update();
+    const times = item.times.slice();
 
-//     (function getPropertyInfo(itemNames: string[]) {
-//         itemNames.forEach((key) => {
-//             const frames: any[] = [];
-//             const isParent = isObject(itemNames);
-//             const keys = key.split("///");
+    const originalDuration = item.getDuration();
+    !item.getFrame(0) && times.unshift(0);
+    !item.getFrame(originalDuration) && times.push(originalDuration);
+    const states = items
+        .slice(1)
+        .map((animator) => animator.state)
+        .reverse();
+    const entries = getFiniteEntries(times, states);
+    const parentItem = items[items.length - 2] as Scene;
 
-//             const isItem = keys.length === 1;
-//             entries.forEach(([time, iterationTime]) => {
-//                 const value = item.get(iterationTime, ...keys);
-//                 if (isUndefined(value)) {
-//                     return;
-//                 }
-//                 frames.push([time, iterationTime, value]);
-//             });
+    function getProperties(names: Array<string | number>): ItemInfo {
+        const frameInfos = getFrameInfos(entries.map(([time, iterationTime]) => {
+            const value = item.get(iterationTime, ...names);
+            if (isUndefined(value)) {
+                return;
+            }
+            return [time, iterationTime, value];
+        }), originalDuration, true);
+        const keys = [...itemNames, ...names];
+        const key = keys.join(NAME_SEPARATOR);
+        const children = (item.getOrders(names) || []).map(nextName => {
+            return getProperties([...names, nextName]);
+        });
+        const info: ItemInfo = {
+            key,
+            keys,
+            name: names[names.length - 1],
+            names,
+            parentScene: parentItem,
+            scene: item,
+            isScene: false,
+            isItem: false,
+            isFrame: true,
+            children,
+            ...frameInfos,
+        };
 
-//             if (key) {
-//                 timelineInfo[key] = {
-//                     key,
-//                     keys,
-//                     parentItem,
-//                     isParent,
-//                     isItem,
-//                     item,
-//                     names,
-//                     properties,
-//                     frames,
-//                 };
-//             }
-//             if (isParent) {
-//                 for (const property in itemNames) {
-//                     getPropertyInfo(
-//                         itemNames[property],
-//                         ...properties,
-//                         property
-//                     );
-//                 }
-//             }
-//         });
-//     })(item.getOrders([]) as string[]);
-// }
+        infoMap[key] = info;
+
+        return info;
+    };
+
+    return item.getOrders([])!.map(name => {
+        return getProperties([name]);
+    });
+}
+export function getFrameInfos(entries: Array<any[] | undefined>, duration: number, isFrame?: boolean) {
+    const frames: Keyframe[] = [];
+    const frameLines: FrameLine[] = [];
+
+    (entries.filter(Boolean) as any[][]).forEach(([time, iterationTime, value], i) => {
+        let isDelay = false;
+        const nextEntry = entries[i + 1];
+        const hasFrame =  !isUndefined(value);
+
+        if (nextEntry) {
+            const [nextTime, nextIterationTime] = nextEntry;
+
+            isDelay = (iterationTime === 0 && nextIterationTime === 0)
+              || (iterationTime === duration && nextIterationTime === duration);
+
+            if (!isDelay && !hasFrame) {
+                return;
+            }
+            if (!isFrame || !isDelay) {
+                frameLines.push({
+                    isDelay,
+                    startTime: time,
+                    endTime: nextTime,
+                });
+            }
+        }
+        if (!isDelay || i !== 0) {
+            frames.push({
+                isScene: true,
+                time,
+                iterationTime,
+                value,
+            });
+        }
+    });
+    return {
+        frames,
+        frameLines,
+    };
+}
 export function getTimelineInfo(scene: Scene | SceneItem): TimelineInfo {
-    const timelineInfo: TimelineInfo = {};
-
-    (function sceneForEach(...items: Array<Scene | SceneItem>) {
+    const infoMap: Record<string, ItemInfo> = {};
+    const rootInfo = (function sceneForEach(...items: Array<Scene | SceneItem>) {
         const length = items.length;
         const lastItem = items[length - 1];
         const names = items.map((item) => `${item.getId()}`);
-        const key = names.join("///");
+        const name = lastItem.getId();
+        const key = names.join(NAME_SEPARATOR);
+        const duration = lastItem.getDuration();
+        let children: ItemInfo[] = [];
+        let info: ItemInfo;
+
         if (isScene(lastItem)) {
-            timelineInfo[key] = {
+            const times = [0, duration];
+            const entries = getFiniteEntries(times, items.slice(1).map(animator => animator.state).reverse());
+            const frameInfos = getFrameInfos(entries.map(([time, iterationTime]) => {
+                return [time, iterationTime, iterationTime];
+            }), duration);
+            info = {
                 key,
                 keys: names,
-                names: [],
+                name,
+                names,
                 isItem: false,
                 isScene: true,
                 parentScene: items[length - 2] as Scene,
                 scene: lastItem,
+                children,
+                ...frameInfos,
             };
-            lastItem.forEach((item: Scene | SceneItem) => {
-                sceneForEach(...items, item);
+            lastItem.forEach((item: Scene | SceneItem, _) => {
+                children.push(sceneForEach(...items, item));
             });
         } else {
-            timelineInfo[key] = {
+            const times = lastItem.times.slice();
+            !lastItem.getFrame(0) && times.unshift(0);
+            !lastItem.getFrame(duration) && times.push(duration);
+
+            const entries = getFiniteEntries(times, items.slice(1).map(animator => animator.state).reverse());
+
+            console.log(entries);
+            const frameInfos = getFrameInfos(entries.map(([time, iterationTime]) => {
+                return [time, iterationTime, lastItem.getFrame(iterationTime)];
+            }), duration);
+            children = getItemProperties(infoMap, items, names, lastItem);
+            info = {
                 key,
                 keys: names,
+                name,
                 names: [],
                 isItem: true,
                 isScene: false,
                 parentScene: items[length - 2] as Scene,
                 scene: lastItem,
+                children,
+                ...frameInfos,
             };
-            // getItemInfo(timelineInfo, items, names, lastItem);
+
         }
+        infoMap[key] = info;
+        return info;
     })(scene);
-    return timelineInfo;
+    return {
+        rootInfo,
+        infoMap,
+    };
+}
+export function getCurrentFlattedFrames(scene: Scene) {
+    const frames = scene.getCurrentFlattedFrames();
+    const nextFrames: Record<string, Frame> = {};
+    const id = scene.getId();
+
+    for (const name in frames) {
+        nextFrames[`${id}${NAME_SEPARATOR}${name}`] = frames[name];
+    }
+    return nextFrames;
+
 }

@@ -1,13 +1,16 @@
 import { TimelineProps, TimelineState } from "./types";
 import * as React from "react";
-import { CSS } from "./consts";
+import { CSS, PREFIX } from "./consts";
 import {
     prefix,
     getTimelineInfo,
+    getCurrentFlattedFrames,
 } from "./utils";
-import Scene, { SceneItem, ROLES } from "scenejs";
-import styled from "react-css-styled";
-import HeaderArea from "./HeaderArea";
+import Scene, { SceneItem, ROLES, isScene, NAME_SEPARATOR } from "scenejs";
+import styled, { StyledElement } from "react-css-styled";
+import HeaderArea from "./areas/HeaderArea";
+import ScrollArea from "./areas/ScrollArea";
+import { ref } from "framework-utils";
 
 const TimelineElement = styled("div", CSS);
 
@@ -18,21 +21,24 @@ export default class Timeline extends React.PureComponent<TimelineProps, Timelin
     };
     public state: TimelineState = {
         alt: false,
-        zoom: 1,
+        zoom: 100,
         maxDuration: 0,
         maxTime: 0,
-        timelineInfo: {},
-        selectedProperty: "",
+        timelineInfo: null,
+        selectedKeys: [],
         selectedTime: -1,
         selectedItem: null,
         init: false,
         updateTime: false,
     };
+    public timelineElement!: StyledElement<HTMLElement>;
+    public headerArea!: HeaderArea;
+    public scrollArea!: ScrollArea;
 
     constructor(props: any) {
         super(props);
 
-        this.state = { ...this.state, ...this.getSceneInfo(this.props.scene, false) };
+        this.state = { ...this.state, ...this._getSceneInfo(this.props.scene, false) };
     }
     public render() {
         const {
@@ -48,13 +54,14 @@ export default class Timeline extends React.PureComponent<TimelineProps, Timelin
             maxDuration,
             maxTime,
             timelineInfo,
-            selectedProperty,
+            selectedKeys,
             selectedTime,
         } = this.state;
 
         return (
             <TimelineElement
                 className={prefix("timeline" + (alt ? " alt" : "")) + (className ? ` ${className}` : "")}
+                ref={ref(this, "timelineElement")}
                 {...attributes}>
                 {/* <ControlArea
                     ref={ref(this, "controlArea")}
@@ -62,23 +69,45 @@ export default class Timeline extends React.PureComponent<TimelineProps, Timelin
                     timeline={this}
                 />*/}
                 <HeaderArea
-                    // ref={ref(this, "headerArea")}
+                    ref={ref(this, "headerArea")}
                     timeline={this}
                     zoom={zoom}
                     timelineInfo={timelineInfo} />
-                {/*
                 <ScrollArea
                     ref={ref(this, "scrollArea")}
                     timeline={this}
-                    maxDuration={maxDuration}
                     zoom={zoom}
                     maxTime={maxTime}
-                    selectedProperty={selectedProperty}
+                    selectedKeys={selectedKeys}
                     selectedTime={selectedTime}
                     timelineInfo={timelineInfo}
-                /> */}
+                    onScroll={this._onScroll}
+                />
             </TimelineElement>
         );
+    }
+    public componentDidMount() {
+        (this.props.scene as Scene).on("animate", this._onAnimate);
+
+        this._onAnimate();
+
+        window.addEventListener("resize", this._onResize);
+    }
+    public componentWillUnmount() {
+        window.removeEventListener("resize", this._onResize);
+    }
+    public getTime() {
+        const scene = this.props.scene;
+        return scene ? scene.getTime() : 0;
+    }
+    public setTime(time: number) {
+        const scene = this.props.scene;
+
+        scene && scene.setTime(time);
+    }
+    public updateCursor() {
+        this.headerArea.forceUpdate();
+        this.scrollArea.keyframesArea.forceUpdate();
     }
     public update = (isInit: boolean = false) => {
         const scene = this.props.scene;
@@ -100,15 +129,42 @@ export default class Timeline extends React.PureComponent<TimelineProps, Timelin
             updateTime: true,
             init: isInit,
             zoom: nextZoom,
+        }, () => {
+            this._onAnimate();
         });
     }
-    private getSceneInfo(scene?: Scene | SceneItem, isInit?: boolean) {
+    private _onAnimate = () => {
+        const scene = this.props.scene!;
+        const frames = isScene(scene)
+            ? getCurrentFlattedFrames(scene)
+            : { [scene.getId()]: scene.getCurrentFrame() };
+
+        // for (const id in frames) {
+        //     const frame = frames[id];
+        //     const fullOrders = frame.getFullOrders([], true);
+        //     fullOrders.forEach(names => {
+        //         const fullId = [id, ...names].join(NAME_SEPARATOR);
+        //         const fileInput = document.querySelector<HTMLInputElement>(`[data-file-path="${fullId}"] input`);
+
+        //         if (fileInput) {
+        //             fileInput.value = frame.get(...names);
+        //         }
+        //     });
+        // }
+        this.updateCursor();
+        // const time = e.time;
+        // const minute = numberFormat(Math.floor(time / 60), 2);
+        // const second = numberFormat(Math.floor(time % 60), 2);
+        // const milisecond = numberFormat(Math.floor((time % 1) * 100), 3, true);
+        // this.moveCursor(time);
+        // this.controlArea.timeArea.getElement().value = `${minute}:${second}:${milisecond}`;
+    }
+    private _getSceneInfo(scene?: Scene | SceneItem, isInit?: boolean) {
         if (!scene) {
             return {
-                timelineInfo: {},
+                timelineInfo: null,
                 maxTime: 0,
                 maxDuration: 0,
-                zoom: 1,
                 init: false,
             };
         }
@@ -120,8 +176,19 @@ export default class Timeline extends React.PureComponent<TimelineProps, Timelin
             timelineInfo: getTimelineInfo(scene),
             maxTime: duration,
             maxDuration: duration,
-            zoom: 1,
             init: isInit || false,
         };
+    }
+    private _setInputs(obj: Record<string, any>) {
+        // const valuesArea = this.scrollArea.valuesArea.getElement();
+        // for (const name in obj) {
+        //     valuesArea.querySelector<HTMLInputElement>(`[data-id="${name}"] input`)!.value = obj[name];
+        // }
+    }
+    private _onScroll = (scrollLeft: number) => {
+        this.headerArea.scroll(scrollLeft / this.state.zoom);
+    }
+    private _onResize = () => {
+        this.headerArea.ruler.resize();
     }
 }

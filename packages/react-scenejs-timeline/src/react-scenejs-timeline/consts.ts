@@ -1,7 +1,6 @@
 import { prefixCSS } from "framework-utils";
 
 export const PREFIX = `scenejs-timeline-`;
-
 export const CSS = prefixCSS(PREFIX, `
 {
     position: relative;
@@ -10,6 +9,8 @@ export const CSS = prefixCSS(PREFIX, `
     background: #000;
     display: flex;
     flex-direction: column;
+    --${PREFIX}border-color: #666;
+    --${PREFIX}time: 0;
 }
 * {
     font-family: sans-serif;
@@ -29,33 +30,29 @@ export const CSS = prefixCSS(PREFIX, `
   top: 0;
   height: 30px;
   min-height: 30px;
+  border-bottom: 1px solid var(--scenejs-timeline-border-color);
 }
 .header-area .keyframes {
   padding: 0px;
 }
 .header-area .properties-area,
 .header-area .keyframes-area,
-.header-area .values-area,
 .header-area .keyframes-scroll-area {
     height: 100%;
 }
 .header-area .keyframes-scroll-area {
     overflow: hidden;
 }
-.header-area .property, .header-area .value, .header-area .keyframes {
+.header-area .property, .header-area .keyframes {
   height: 100%;
 }
 .header-area .property {
-    line-height: 30px;
+    padding-left: 10px;
 }
-.value .add {
-    text-align: center;
-    color: #fff;
-    line-height: 30px;
-    font-weight: bold;
-    font-size: 20px;
-    cursor: pointer;
+.header-area .keyframes-area {
+    overflow: hidden;
 }
+
 .header-area .keyframes-area::-webkit-scrollbar {
     display: none;
 }
@@ -70,6 +67,19 @@ export const CSS = prefixCSS(PREFIX, `
     top: auto;
     background: none;
     cursor: pointer;
+    will-change: transform;
+}
+.keyframes-scroll-area .keyframe-cursor {
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    background: #4af;
+    width: 1px;
+    height: 100%;
+    left: 0px;
+    transform: translate(-50%);
+    potiner-events: none;
+    will-change: transform;
 }
 .control-area .keyframes {
     padding-left: 10px;
@@ -173,7 +183,7 @@ export const CSS = prefixCSS(PREFIX, `
   height: calc(100% - 60px);
   overflow: auto;
 }
-.properties-area, .keyframes-area, .values-area {
+.properties-area, .keyframes-area {
   display: inline-block;
   position: relative;
   font-size: 16px;
@@ -184,16 +194,61 @@ export const CSS = prefixCSS(PREFIX, `
     display: none;
 }
 .properties-area {
-  width: 30%;
-  max-width: 200px;
+  width: 250px;
   box-sizing: border-box;
+  background: #333;
+  border-right: 1px solid var(--scenejs-timeline-border-color);
 }
-.values-area {
-    width: 50px;
-    min-width: 50px;
-    display: inline-block;
-    border-right: 1px solid #666;
+
+.property {
+    position: relative;
+    height: 34px;
+    line-height: 30px;
     box-sizing: border-box;
+    white-space: nowrap;
+    z-index: 1;
+    font-size: 13px;
+    font-weight: bold;
+    color: #eee;
+    display: flex;
+    padding: 2px 0px;
+}
+.name {
+    position: relative;
+    flex: 1;
+}
+.value {
+    position: relative;
+    display: block;
+    width: 40px;
+}
+:host.alt .value input {
+    cursor: ew-resize;
+}
+.value[data-object="1"] input {
+    display: none;
+}
+.value .add {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: pointer;
+}
+.value .add:before, .value .add:after {
+    position: absolute;
+    content: "";
+    width: 10px;
+    height: 2px;
+    border-radius: 1px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+}
+.value .add:after {
+    width: 2px;
+    height: 10px;
 }
 .value input {
     appearance: none;
@@ -211,44 +266,8 @@ export const CSS = prefixCSS(PREFIX, `
     box-sizing: border-box;
     text-align: center;
 }
-.value {
 
-}
-:host.alt .value input {
-    cursor: ew-resize;
-}
-.value[data-object="1"] input {
-    display: none;
-}
-.properties-scroll-area {
-  display: inline-block;
-  min-width: 100%;
-}
-.keyframes-area {
-  flex: 1;
-}
-.keyframes-scroll-area {
-  position: relative;
-  min-width: 300px;
-}
-.keyframes, .property, .value {
-  position: relative;
-  height: 30px;
-  line-height: 30px;
-  border-bottom: 1px solid #555;
-  box-sizing: border-box;
-  white-space: nowrap;
-  background: #333;
-  z-index: 1;
-}
 
-.property {
-  padding-left: 10px;
-  box-sizing: border-box;
-  font-size: 13px;
-  font-weight: bold;
-  color: #eee;
-}
 .property .remove {
     position: absolute;
     display: inline-block;
@@ -289,81 +308,40 @@ export const CSS = prefixCSS(PREFIX, `
     display: inline-block;
 }
 
-[data-item="1"], [data-item="1"] .add {
-    height: 30px;
-    line-height: 30px;
-}
-.time-area {
-    position: absolute;
-    top: 0;
-    left: 10px;
-    font-size: 13px;
-    color: #4af;
-    line-height: 30px;
-    font-weight: bold;
-    height: 100%;
-    line-height: 30px;
-    border: 0;
-    background: transparent;
-    outline: 0;
-}
-.time-area:after {
-    content: "s";
-}
-.property .arrow {
-    position: relative;
-    display: inline-block;
-    width: 20px;
-    height: 25px;
-    cursor: pointer;
-    vertical-align: middle;
-}
-.property .arrow:after {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: 0;
-    bottom: 0;
-    margin: auto;
-    width: 0;
-    height: 0;
-    border-top: 6px solid #eee;
-    border-left: 4px solid transparent;
-    border-right: 4px solid transparent;
-}
-.property[data-fold="1"] .arrow:after {
-    border-top: 4px solid transparent;
-    border-bottom: 4px solid transparent;
-    border-right: 0;
-    border-left: 6px solid #eee;
-}
-.property[data-object="0"] .arrow {
-    display: none;
-}
-.property.fold, .keyframes.fold, .value.fold {
-    display: none;
-}
-.property.select, .value.select, .keyframes.select {
-    background: rgba(120, 120, 120, 0.7);
-}
-.keyframes {
 
+
+.keyframes-area {
+    flex: 1;
 }
-.keyframe-delay {
-  position: absolute;
-  top: 3px;
-  bottom: 3px;
-  left: 0;
-  background: #4af;
-  opacity: 0.2;
-  z-index: 0;
+.keyframes-scroll-area {
+    position: relative;
+    min-width: 100%;
+}
+.keyframe {
+    position: absolute;
+    font-size: 0px;
+    width: 12px;
+    height: 12px;
+    top: 50%;
+    background: #fff;
+    border: 2px solid #383838;
+    border-radius: 2px;
+    box-sizing: border-box;
+    transform: translate(-50%, -50%) rotate(45deg);
+    z-index: 1;
+    cursor: pointer;
+}
+.keyframe-line {
+    position: absolute;
+    height: 8px;
+    top: 50%;
+    background: #666;
+    z-index: 0;
 }
 .keyframe-group {
     position: absolute;
-    top: 3px;
-    bottom: 3px;
-    left: 0;
+    top: 50%;
+    height: calc(100% - 6px);
     background: #4af;
     opacity: 0.6;
     border: 1px solid rgba(0, 0, 0, 0.2);
@@ -371,100 +349,14 @@ export const CSS = prefixCSS(PREFIX, `
     border-top-color: rgba(255, 255, 255, 0.2);
     z-index: 0;
 }
-.keyframe-line {
-  position: absolute;
-  height: 8px;
-  top: 0;
-  bottom: 0;
-  margin: auto;
-  background: #666;
-  z-index: 0;
-}
-.keyframe {
-  position: absolute;
-  font-size: 0px;
-  width: 12px;
-  height: 12px;
-  top: 0px;
-  bottom: 0px;
-  margin: auto;
-  background: #fff;
-  border: 2px solid #383838;
-  border-radius: 2px;
-  box-sizing: border-box;
-  transform: translate(-50%) rotate(45deg);
-  z-index: 1;
-  cursor: pointer;
-}
-.keyframe[data-no="1"] {
+.keyframe-delay {
+    height: calc(100% - 6px);
+    background: #4af;
     opacity: 0.2;
 }
-.select .keyframe {
-    border-color: #555;
-}
-.keyframe.select {
-    background: #4af;
-}
-.keyframes-container, .line-area {
-  position: relative;
-  width: calc(100% - 30px);
-  left: 15px;
-  height: 100%;
-}
-.line-area {
-  position: absolute;
-  top: 0;
-  z-index: 0;
-}
-.keyframe-cursor {
-  position: absolute;
-  top: 0;
-  z-index: 1;
-  background: #4af;
-  width: 1px;
-  height: 100%;
-  left: 15px;
-  transform: translate(-50%);
-}
-.scroll-area .keyframe-cursor {
-  pointer-events: none;
-}
-.division-line {
-  position: absolute;
-  background: #333;
-  width: 1px;
-  height: 100%;
-  transform: translate(-50%);
+@media screen and (max-width: 450px) {
+    .properties-area {
+        width: 150px;
+    }
 }
 `);
-
-export const DURATION = "duration";
-export const FILL_MODE = "fillMode";
-export const DIRECTION = "direction";
-export const ITERATION_COUNT = "iterationCount";
-export const DELAY = "delay";
-export const EASING = "easing";
-export const PLAY_SPEED = "playSpeed";
-export const EASING_NAME = "easingName";
-export const ITERATION_TIME = "iterationTime";
-export const PAUSED = "paused";
-export const ENDED = "ended";
-export const TIMEUPDATE = "timeupdate";
-export const ANIMATE = "animate";
-export const PLAY = "play";
-export const RUNNING = "running";
-export const ITERATION = "iteration";
-export const START_ANIMATION = "startAnimation";
-export const PAUSE_ANIMATION = "pauseAnimation";
-export const ALTERNATE = "alternate";
-export const REVERSE = "reverse";
-export const ALTERNATE_REVERSE = "alternate-reverse";
-export const NORMAL = "normal";
-export const INFINITE = "infinite";
-export const PLAY_STATE = "playState";
-export const PLAY_CSS = "playCSS";
-export const PREV_TIME = "prevTime";
-export const TICK_TIME = "tickTime";
-export const CURRENT_TIME = "currentTime";
-export const SELECTOR = "selector";
-export const TRANSFORM_NAME = "transform";
