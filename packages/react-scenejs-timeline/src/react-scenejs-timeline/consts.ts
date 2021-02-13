@@ -78,7 +78,7 @@ export const CSS = prefixCSS(PREFIX, `
     height: 100%;
     left: 0px;
     transform: translate(-50%);
-    potiner-events: none;
+    pointer-events: none;
     will-change: transform;
 }
 .control-area .keyframes {
@@ -276,7 +276,7 @@ export const CSS = prefixCSS(PREFIX, `
     height: 18px;
     top: 0;
     bottom: 0;
-    right: 10px;
+    right: 40px;
     margin: auto;
     border-radius: 50%;
     border: 2px solid #fff;
@@ -284,6 +284,9 @@ export const CSS = prefixCSS(PREFIX, `
     display: none;
     margin-left: 10px;
     box-sizing: border-box;
+}
+.property:hover .remove {
+    display: block;
 }
 .property .remove:before, .property .remove:after {
     position: absolute;
@@ -303,9 +306,6 @@ export const CSS = prefixCSS(PREFIX, `
 }
 .property .remove:after {
     transform: rotate(-45deg);
-}
-.property:hover .remove {
-    display: inline-block;
 }
 
 

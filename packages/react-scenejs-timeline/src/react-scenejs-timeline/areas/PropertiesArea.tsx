@@ -2,9 +2,13 @@ import * as React from "react";
 import { prefix } from "../utils";
 import Folder, { FileProps, OnFold, OnSelect } from "@scena/react-folder";
 import { ItemInfo, TimelineInfo } from "../types";
-import { isRole } from "scenejs";
+import { isRole, SceneItem } from "scenejs";
+import { OnDragStart } from "gesto";
+import { hasClass } from "@daybrush/utils";
+import Timeline from "../Timeline";
 
 export default class PropertiesArea extends React.PureComponent<{
+    timeline: Timeline,
     timelineInfo: TimelineInfo | null;
     selected: string[];
     folded: string[];
@@ -37,6 +41,7 @@ export default class PropertiesArea extends React.PureComponent<{
                 onFold={onFold}
                 multiselect={true}
                 isPadding={true}
+                dragCondtion={this.dragCondition}
             />
         </div>;
     }
@@ -59,6 +64,9 @@ export default class PropertiesArea extends React.PureComponent<{
         return (
             <div className={prefix("property")}>
                 <div className={prefix("name")}>{name}</div>
+                <div className={prefix("remove")} onClick={e => {
+                    this.onClickRemove(info);
+                }}></div>
                 <div className={prefix("value")}>{isAdd ? this.renderAdd(info) : this.renderInput(info)}</div>
             </div>
         );
@@ -68,5 +76,38 @@ export default class PropertiesArea extends React.PureComponent<{
     }
     private renderInput(info: ItemInfo) {
         return <input />;
+    }
+    private dragCondition = (e: OnDragStart) => {
+        const target = e.inputEvent.target;
+
+        return !hasClass(target, prefix("remove"));
+    }
+    private onClickRemove = (info: ItemInfo) => {
+        const { timeline } = this.props;
+        const { isItem, isScene, isFrame, scene, parentScene, names } = info;
+
+        if (!parentScene) {
+            return;
+        }
+        if (isItem || isScene) {
+            let targetName: string | number | null = null;
+            parentScene.forEach((item, name) => {
+                if (item === scene) {
+                    targetName = name;
+                    return;
+                }
+            });
+            if (targetName != null) {
+                parentScene.removeItem(targetName);
+            }
+        } else if (isFrame) {
+            const times = (scene as SceneItem).times;
+
+            times.forEach(time => {
+                (scene as SceneItem).remove(time, ...names);
+            });
+        }
+
+        timeline.update();
     }
 }

@@ -37,6 +37,7 @@ export default class ScrollArea extends React.PureComponent<{
         } = this.state;
         return <div className={prefix("scroll-area")}>
             <PropertiesArea
+                timeline={timeline}
                 timelineInfo={timelineInfo}
                 selected={selected}
                 folded={folded}

@@ -387,8 +387,6 @@ export function getTimelineInfo(scene: Scene | SceneItem): TimelineInfo {
             !lastItem.getFrame(duration) && times.push(duration);
 
             const entries = getFiniteEntries(times, items.slice(1).map(animator => animator.state).reverse());
-
-            console.log(entries);
             const frameInfos = getFrameInfos(entries.map(([time, iterationTime]) => {
                 return [time, iterationTime, lastItem.getFrame(iterationTime)];
             }), duration);
