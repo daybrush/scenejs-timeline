@@ -29,7 +29,7 @@ export default class HeaderArea extends React.PureComponent<{
             scrollLeft,
         } = this.state;
         return (
-            <div className={prefix("header-area")}>
+            <div className={prefix("header-area", "top-area")}>
                 <div className={prefix("properties-area")}>
                     <div className={prefix("property")}>Name</div>
                 </div>

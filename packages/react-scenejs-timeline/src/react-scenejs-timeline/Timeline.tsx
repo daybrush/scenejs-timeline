@@ -5,9 +5,11 @@ import {
     prefix,
     getTimelineInfo,
     getCurrentFlattedFrames,
+    numberFormat,
 } from "./utils";
 import Scene, { SceneItem, ROLES, isScene, NAME_SEPARATOR } from "scenejs";
 import styled, { StyledElement } from "react-css-styled";
+import ControlArea from "./areas/ControlArea";
 import HeaderArea from "./areas/HeaderArea";
 import ScrollArea from "./areas/ScrollArea";
 import { ref } from "framework-utils";
@@ -32,6 +34,7 @@ export default class Timeline extends React.PureComponent<TimelineProps, Timelin
         updateTime: false,
     };
     public timelineElement!: StyledElement<HTMLElement>;
+    public controlArea!: ControlArea;
     public headerArea!: HeaderArea;
     public scrollArea!: ScrollArea;
 
@@ -63,11 +66,11 @@ export default class Timeline extends React.PureComponent<TimelineProps, Timelin
                 className={prefix("timeline" + (alt ? " alt" : "")) + (className ? ` ${className}` : "")}
                 ref={ref(this, "timelineElement")}
                 {...attributes}>
-                {/* <ControlArea
+                <ControlArea
                     ref={ref(this, "controlArea")}
                     scene={scene}
                     timeline={this}
-                />*/}
+                />
                 <HeaderArea
                     ref={ref(this, "headerArea")}
                     timeline={this}
@@ -136,6 +139,16 @@ export default class Timeline extends React.PureComponent<TimelineProps, Timelin
             this._onAnimate();
         });
     }
+    public prev = () => {
+        const scene = this.props.scene;
+
+        scene && this.setTime(scene.getTime() - 0.05);
+    }
+    public next() {
+        const scene = this.props.scene;
+
+        scene && this.setTime(scene.getTime() + 0.05);
+    }
     private _onAnimate = () => {
         const scene = this.props.scene!;
         const frames = isScene(scene)
@@ -155,12 +168,8 @@ export default class Timeline extends React.PureComponent<TimelineProps, Timelin
         //     });
         // }
         this.updateCursor();
-        // const time = e.time;
-        // const minute = numberFormat(Math.floor(time / 60), 2);
-        // const second = numberFormat(Math.floor(time % 60), 2);
-        // const milisecond = numberFormat(Math.floor((time % 1) * 100), 3, true);
-        // this.moveCursor(time);
-        // this.controlArea.timeArea.getElement().value = `${minute}:${second}:${milisecond}`;
+        const time = scene.getTime();
+        this.controlArea.updateTime(time);
     }
     private _getSceneInfo(scene?: Scene | SceneItem, isInit?: boolean) {
         if (!scene) {

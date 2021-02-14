@@ -9,6 +9,7 @@ export const CSS = prefixCSS(PREFIX, `
     background: #000;
     display: flex;
     flex-direction: column;
+    --${PREFIX}background-color: #333;
     --${PREFIX}border-color: #666;
     --${PREFIX}time: 0;
 }
@@ -17,14 +18,14 @@ export const CSS = prefixCSS(PREFIX, `
     box-sizing: border-box;
     color: #fff;
 }
-.header-area, .scroll-area {
+.top-area, .scroll-area {
    width: 100%;
    position: relative;
   display: flex;
   -webkit-align-items: flex-start;
   align-items: flex-start;
 }
-.header-area {
+.top-area {
   position: relative;
   z-index: 10;
   top: 0;
@@ -32,27 +33,47 @@ export const CSS = prefixCSS(PREFIX, `
   min-height: 30px;
   border-bottom: 1px solid var(--scenejs-timeline-border-color);
 }
-.header-area .keyframes {
+.top-area .keyframes {
   padding: 0px;
 }
-.header-area .properties-area,
-.header-area .keyframes-area,
-.header-area .keyframes-scroll-area {
+.top-area .properties-area,
+.top-area .keyframes-area,
+.top-area .keyframes-scroll-area {
     height: 100%;
 }
-.header-area .keyframes-scroll-area {
+.top-area .keyframes-scroll-area {
     overflow: hidden;
 }
-.header-area .property, .header-area .keyframes {
+.top-area .property, .top-area .keyframes {
   height: 100%;
 }
-.header-area .property {
+.top-area .property {
     padding-left: 10px;
 }
-.header-area .keyframes-area {
+.top-area .keyframes-area {
     overflow: hidden;
 }
 
+/*
+Control Area
+*/
+.time-area {
+    position: absolute;
+    top: 0;
+    left: 10px;
+    font-size: 13px;
+    color: #4af;
+    line-height: 30px;
+    font-weight: bold;
+    height: 100%;
+    line-height: 30px;
+    border: 0;
+    background: transparent;
+    outline: 0;
+}
+/*
+Header Area
+*/
 .header-area .keyframes-area::-webkit-scrollbar {
     display: none;
 }
@@ -81,8 +102,8 @@ export const CSS = prefixCSS(PREFIX, `
     pointer-events: none;
     will-change: transform;
 }
-.control-area .keyframes {
-    padding-left: 10px;
+.control-area .keyframes-area {
+    background: var(--${PREFIX}background-color);
 }
 .play-control-area {
     position: absolute;
