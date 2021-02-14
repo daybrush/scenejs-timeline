@@ -1,6 +1,6 @@
 import * as React from "react";
 import { prefix } from "../utils";
-import Folder, { FileProps, OnFold, OnSelect } from "@scena/react-folder";
+import Folder, { FileProps, OnFold, OnMove, OnSelect } from "@scena/react-folder";
 import { ItemInfo, TimelineInfo } from "../types";
 import { isRole, SceneItem } from "scenejs";
 import { OnDragStart } from "gesto";
@@ -39,9 +39,12 @@ export default class PropertiesArea extends React.PureComponent<{
                 borderColor={"#666"}
                 onSelect={onSelect}
                 onFold={onFold}
+                isMove={true}
+                isMoveChildren={true}
                 multiselect={true}
                 isPadding={true}
-                dragCondtion={this.dragCondition}
+                dragCondtion={this._dragCondition}
+                onMove={this._onMove}
             />
         </div>;
     }
@@ -65,24 +68,47 @@ export default class PropertiesArea extends React.PureComponent<{
             <div className={prefix("property")}>
                 <div className={prefix("name")}>{name}</div>
                 <div className={prefix("remove")} onClick={e => {
-                    this.onClickRemove(info);
+                    this._onClickRemove(info);
                 }}></div>
-                <div className={prefix("value")}>{isAdd ? this.renderAdd(info) : this.renderInput(info)}</div>
+                <div className={prefix("value")}>{isAdd ? this._renderAdd(info) : this._renderInput(info)}</div>
             </div>
         );
     }
-    private renderAdd(info: ItemInfo) {
+    private _renderAdd(info: ItemInfo) {
         return <span className={prefix("add")}></span>;
     }
-    private renderInput(info: ItemInfo) {
+    private _renderInput(info: ItemInfo) {
         return <input />;
     }
-    private dragCondition = (e: OnDragStart) => {
+    private _dragCondition = (e: OnDragStart) => {
         const target = e.inputEvent.target;
 
         return !hasClass(target, prefix("remove"));
     }
-    private onClickRemove = (info: ItemInfo) => {
+    private _onMove = (e: OnMove<ItemInfo>) => {
+        const timeline = this.props.timeline;
+        const parentInfo = e.parentInfo;
+        const orders = e.children.map(info => info.name);
+
+        if (!parentInfo) {
+            return;
+        }
+        const {
+            isItem,
+            isScene,
+            isFrame,
+            names,
+            scene,
+        } = parentInfo.info;
+
+        if (isItem || isFrame) {
+            console.log(names, orders);
+            scene.setOrders(names, orders);
+            timeline.update();
+        }
+
+    }
+    private _onClickRemove = (info: ItemInfo) => {
         const { timeline } = this.props;
         const { isItem, isScene, isFrame, scene, parentScene, names } = info;
 

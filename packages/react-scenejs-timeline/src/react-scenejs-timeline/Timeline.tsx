@@ -96,6 +96,9 @@ export default class Timeline extends React.PureComponent<TimelineProps, Timelin
     public componentWillUnmount() {
         window.removeEventListener("resize", this._onResize);
     }
+    public getScene() {
+        return this.props.scene;
+    }
     public getTime() {
         const scene = this.props.scene;
         return scene ? scene.getTime() : 0;
