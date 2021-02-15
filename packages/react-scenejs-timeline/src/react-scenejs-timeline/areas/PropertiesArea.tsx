@@ -31,7 +31,7 @@ export default class PropertiesArea extends React.PureComponent<{
                 pathProperty={"key"}
                 nameProperty={"name"}
                 childrenProperty={"children"}
-                FileComponent={this.renderProperty}
+                FileComponent={this._renderProperty}
                 selected={selected}
                 folded={folded}
                 backgroundColor={"#333"}
@@ -49,7 +49,7 @@ export default class PropertiesArea extends React.PureComponent<{
         </div>;
     }
 
-    private renderProperty = (props: FileProps<ItemInfo>) => {
+    private _renderProperty = (props: FileProps<ItemInfo>) => {
         const {
             name,
             scope,

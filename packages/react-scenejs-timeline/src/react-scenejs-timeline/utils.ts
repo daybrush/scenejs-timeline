@@ -424,3 +424,7 @@ export function getCurrentFlattedFrames(scene: Scene) {
     return nextFrames;
 
 }
+
+export function checkInput(target: any) {
+    return (target ? (target.tagName || "") : "").toLowerCase() === "input";
+}

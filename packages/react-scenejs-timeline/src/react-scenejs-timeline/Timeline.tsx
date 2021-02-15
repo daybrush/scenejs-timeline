@@ -6,6 +6,7 @@ import {
     getTimelineInfo,
     getCurrentFlattedFrames,
     numberFormat,
+    checkInput,
 } from "./utils";
 import Scene, { SceneItem, ROLES, isScene, NAME_SEPARATOR } from "scenejs";
 import styled, { StyledElement } from "react-css-styled";
@@ -13,6 +14,7 @@ import ControlArea from "./areas/ControlArea";
 import HeaderArea from "./areas/HeaderArea";
 import ScrollArea from "./areas/ScrollArea";
 import { ref } from "framework-utils";
+import KeyController from "keycon";
 
 const TimelineElement = styled("div", CSS);
 
@@ -37,6 +39,7 @@ export default class Timeline extends React.PureComponent<TimelineProps, Timelin
     public controlArea!: ControlArea;
     public headerArea!: HeaderArea;
     public scrollArea!: ScrollArea;
+    private _keycon!: KeyController;
 
     constructor(props: any) {
         super(props);
@@ -92,12 +95,14 @@ export default class Timeline extends React.PureComponent<TimelineProps, Timelin
     public componentDidMount() {
         (this.props.scene as Scene).on("animate", this._onAnimate);
 
+        this._initKeyController();
         this._onAnimate();
 
         window.addEventListener("resize", this._onResize);
     }
     public componentWillUnmount() {
         window.removeEventListener("resize", this._onResize);
+        this._keycon.destroy();
     }
     public getScene() {
         return this.props.scene;
@@ -149,6 +154,60 @@ export default class Timeline extends React.PureComponent<TimelineProps, Timelin
 
         scene && this.setTime(scene.getTime() + 0.05);
     }
+    public togglePlay = () => {
+        const scene = this.props.scene;
+
+        scene && (scene.isPaused() ? scene.play() : scene.pause());
+    }
+    private _initKeyController() {
+        this._keycon = new KeyController(window)
+            .keydown(e => {
+                !e.isToggle && e.inputEvent.stopPropagation();
+            })
+            .keyup(e => {
+                !e.isToggle && e.inputEvent.stopPropagation();
+            })
+            .keyup("enter", e => {
+                // go to time
+                const target = e.inputEvent.target;
+                const timeAreaElement = this.controlArea.timeAreaElement;
+
+                if (target === timeAreaElement) {
+                    const value = timeAreaElement.value;
+                    const result = /(\d+):(\d+):(\d+)/g.exec(value);
+
+                    if (!result) {
+                        return;
+                    }
+                    const minute = parseFloat(result[1]);
+                    const second = parseFloat(result[2]);
+                    const milisecond = parseFloat(`0.${result[3]}`);
+                    const time = minute * 60 + second + milisecond;
+
+                    this.setTime(time);
+                }
+            })
+            .keydown("left", e => {
+                if (!checkInput(e.inputEvent.target)) {
+                    this.prev();
+                }
+            })
+            .keydown("right", e => {
+                if (!checkInput(e.inputEvent.target)) {
+                    this.next();
+                }
+            })
+            .keydown("space", e => {
+                if (!checkInput(e.inputEvent.target)) {
+                    e.inputEvent.preventDefault();
+                }
+            })
+            .keyup("space", e => {
+                if (!checkInput(e.inputEvent.target)) {
+                    this.togglePlay();
+                }
+            });
+    }
     private _onAnimate = () => {
         const scene = this.props.scene!;
         const frames = isScene(scene)
@@ -190,12 +249,6 @@ export default class Timeline extends React.PureComponent<TimelineProps, Timelin
             maxDuration: duration,
             init: isInit || false,
         };
-    }
-    private _setInputs(obj: Record<string, any>) {
-        // const valuesArea = this.scrollArea.valuesArea.getElement();
-        // for (const name in obj) {
-        //     valuesArea.querySelector<HTMLInputElement>(`[data-id="${name}"] input`)!.value = obj[name];
-        // }
     }
     private _onScroll = (scrollLeft: number) => {
         this.headerArea.scroll(scrollLeft / this.state.zoom);
