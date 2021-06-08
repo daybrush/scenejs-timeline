@@ -1,6 +1,6 @@
 {
   "name": "preact-timeline",
-  "version": "0.2.3",
+  "version": "0.3.1",
   "description": "A library that represents the timeline of Scene.js. You can control time, properties, and items.",
   "main": "./dist/timeline.cjs.js",
   "module": "./dist/timeline.esm.js",
@@ -10,7 +10,8 @@
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
     "start": "rollup -c rollup.config.demo.js -w",
     "build": "rollup -c && npm run declaration && print-sizes ./dist ",
-    "declaration": "rm -rf declaration && tsc -p tsconfig.declaration.json"
+    "declaration": "rm -rf declaration && tsc -p tsconfig.declaration.json",
+    "packages:update": "pvu --path=../../ --update=./"
   },
   "keywords": [
     "scene",
@@ -36,10 +37,9 @@
   },
   "homepage": "https://github.com/daybrush/scenejs-timeline#readme",
   "dependencies": {
-    "@daybrush/drag": "^0.4.2",
-    "@daybrush/utils": "^0.10.0",
-    "@egjs/axes": "^2.5.13",
-    "keycon": "^0.2.2",
+    "@daybrush/drag": "^0.19.3",
+    "@daybrush/utils": "^0.10.1",
+    "keycon": "^0.5.0",
     "scenejs": "^1.0.0"
   },
   "devDependencies": {
@@ -48,7 +48,8 @@
     "preact": "^8.4.2",
     "preact-compat": "^3.18.5",
     "print-sizes": "0.0.4",
-    "react-scenejs-timeline": "^0.2.4",
+    "pvu": "^0.5.1",
+    "react-scenejs-timeline": "~0.3.2",
     "rollup-plugin-css-bundle": "^1.0.4",
     "rollup-plugin-env": "^0.21.4",
     "shape-svg": "^0.3.3",

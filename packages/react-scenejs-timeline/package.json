@@ -1,6 +1,6 @@
 {
   "name": "react-scenejs-timeline",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "A library that represents the timeline of Scene.js. You can control time, properties, and items.",
   "main": "./dist/timeline.cjs.js",
   "module": "./dist/timeline.esm.js",
@@ -10,7 +10,12 @@
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
     "start": "react-scripts start",
     "build": "rollup -c && npm run declaration && print-sizes ./dist ",
-    "declaration": "rm -rf declaration && tsc -p tsconfig.declaration.json"
+    "declaration": "rm -rf declaration && tsc -p tsconfig.declaration.json",
+    "packages": "npm run packages:update && npm run packages:build && npm run packages:publish && npm run packages:vanilla",
+    "packages:update": "pvu --path=../ --update=preact-timeline",
+    "packages:build": "pvu --path=../ --build=preact-timeline",
+    "packages:publish": "pvu --path=../ --publish=preact-timeline",
+    "packages:vanilla": "cd ../preact-timeline && npm run packages:update"
   },
   "keywords": [
     "scene",
@@ -39,6 +44,7 @@
     "@types/react": "^16.8.18",
     "@types/react-dom": "^16.8.4",
     "print-sizes": "0.0.4",
+    "pvu": "^0.5.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-scripts": "^3.0.1",
