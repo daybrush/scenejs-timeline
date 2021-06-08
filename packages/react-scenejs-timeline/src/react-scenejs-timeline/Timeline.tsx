@@ -404,7 +404,11 @@ export default class Timeline extends PureProps<TimelineProps, TimelineState> {
         this.values = obj;
         const valuesArea = this.scrollArea.valuesArea.getElement();
         for (const name in obj) {
-            valuesArea.querySelector<HTMLInputElement>(`[data-id="${name}"] input`)!.value = obj[name];
+            const input = valuesArea.querySelector<HTMLInputElement>(`[data-id="${name}"] input`);
+
+            if (input) {
+                input.value = obj[name];
+            }
         }
     }
 
