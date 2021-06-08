@@ -52,7 +52,7 @@ export default class App extends Component<{}> {
                 <Timeline
                     ref={ref(this, "timeline")}
                     scene={this.scene}
-                    style={{ maxHeight: "350px", position: "fixed", bottom: 0, left: 0, right: 0 }}
+                    style={{ maxHeight: "500px", position: "fixed", bottom: 0, left: 0, right: 0 }}
                 />
             </div>);
     }
@@ -116,7 +116,7 @@ export default class App extends Component<{}> {
                     transform: "scale(1)",
                 },
             },
-            ".stick1 .rect": i => ({
+            ".stick1 .rect": (i: number) => ({
                 0: {
                     transform: {
                         scale: 0,
@@ -132,7 +132,7 @@ export default class App extends Component<{}> {
                     delay: 1 + i % 6 * 0.1,
                 },
             }),
-            ".stick2 .rect": i => ({
+            ".stick2 .rect": (i: number) => ({
                 0: {
                     transform: {
                         scale: 0,
@@ -201,7 +201,7 @@ export default class App extends Component<{}> {
                     delay: 2.2,
                 },
             },
-            ".dash-line": i => ({
+            ".dash-line": (i: number) => ({
                 0: {
                     transform: `rotate(${i * 90}deg) translate2(0px, -100%)`,
                 },

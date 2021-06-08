@@ -20,6 +20,7 @@ export default class ScrollArea extends React.PureComponent<{
     folded: string[];
 }> {
     public keyframesArea!: KeyframesArea;
+    public propertiesArea!: PropertiesArea;
     public state = {
         selected: [],
         folded: [],
@@ -37,6 +38,7 @@ export default class ScrollArea extends React.PureComponent<{
         } = this.state;
         return <div className={prefix("scroll-area")}>
             <PropertiesArea
+                ref={ref(this, "propertiesArea")}
                 timeline={timeline}
                 timelineInfo={timelineInfo}
                 selected={selected}
@@ -55,6 +57,11 @@ export default class ScrollArea extends React.PureComponent<{
                 onScroll={onScroll}
             />
         </div>;
+    }
+    public unselect() {
+        this.setState({
+            selected: [],
+        });
     }
     private _onSelect = (e: OnSelect) => {
         this.setState({

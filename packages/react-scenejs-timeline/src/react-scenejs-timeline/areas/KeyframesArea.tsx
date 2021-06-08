@@ -27,11 +27,11 @@ export default class KeyframesArea extends React.PureComponent<{
             onSelect,
         } = this.props;
         return <div className={prefix("keyframes-area")}
-        ref={ref(this, "keyframesAreaElement")}
+            ref={ref(this, "keyframesAreaElement")}
             onScroll={this._onScroll}>
             <div className={prefix("keyframes-scroll-area")} style={{
-                    width: "120%",
-                }}>
+                width: "120%",
+            }}>
                 <Folder<ItemInfo>
                     infos={timelineInfo!.rootInfo.children}
                     idProperty={"key"}
@@ -51,10 +51,10 @@ export default class KeyframesArea extends React.PureComponent<{
                     onSelect={onSelect}
                 />
                 <div className={prefix("keyframe-cursor")}
-                ref={ref(this, "cursorElement")}
-                style={{
-                    transform: `translate(-50%) translate(${zoom * (timeline.getTime() + 0.1)}px)`,
-                }}></div>
+                    ref={ref(this, "cursorElement")}
+                    style={{
+                        transform: `translate(-50%) translate(${zoom * (timeline.getTime() + 0.1)}px)`,
+                    }}></div>
             </div>
         </div>;
     }
@@ -63,15 +63,15 @@ export default class KeyframesArea extends React.PureComponent<{
             zoom,
         } = this.props;
         const {
-            name,
-            scope,
-            path,
+            // name,
+            // scope,
+            // path,
             info,
         } = props;
 
         const {
             isFrame,
-            names,
+            // names,
             frames,
             frameLines,
         } = info;
@@ -79,17 +79,20 @@ export default class KeyframesArea extends React.PureComponent<{
         return (
             <div className={prefix("property")}>
                 {frameLines.map(({ startTime, endTime, isDelay }, i) => {
-                    return <div key={`line${i}`} className={prefix(
-                        isFrame ? "keyframe-line" : "keyframe-group",
-                        isDelay ? "keyframe-delay" : "")} style={{
+                    return <div
+                        key={`line${i}`}
+                        className={prefix(
+                            isFrame ? "keyframe-line" : "keyframe-group",
+                            isDelay ? "keyframe-delay" : "")}
+                        style={{
                             width: `${(endTime - startTime) * zoom}px`,
                             transform: `translateY(-50%) translate(${(startTime + 0.1) * zoom}px)`,
-                        }}></div>
+                        }}></div>;
                 })}
                 {keyframes.map((keyframe, i) => {
                     return <div key={`keyframe${i}`} className={prefix("keyframe")} style={{
                         transform: `translate(-50%, -50%) translate(${(keyframe.time + 0.1) * zoom}px) rotate(45deg)`,
-                    }}></div>
+                    }}></div>;
                 })}
             </div>
         );

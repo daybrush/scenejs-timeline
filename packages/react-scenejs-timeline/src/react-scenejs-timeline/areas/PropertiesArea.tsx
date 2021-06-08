@@ -2,10 +2,11 @@ import * as React from "react";
 import { prefix } from "../utils";
 import Folder, { FileProps, OnFold, OnMove, OnSelect } from "@scena/react-folder";
 import { ItemInfo, TimelineInfo } from "../types";
-import { isRole, SceneItem } from "scenejs";
+import Scene, { isRole, SceneItem } from "scenejs";
 import { OnDragStart } from "gesto";
-import { hasClass } from "@daybrush/utils";
+import { camelize, hasClass } from "@daybrush/utils";
 import Timeline from "../Timeline";
+import { ref } from "framework-utils";
 
 export default class PropertiesArea extends React.PureComponent<{
     timeline: Timeline,
@@ -15,6 +16,7 @@ export default class PropertiesArea extends React.PureComponent<{
     onSelect: (e: OnSelect) => void;
     onFold: (e: OnFold) => void;
 }> {
+    public folder!: Folder<ItemInfo>;
     public render() {
         const {
             timelineInfo,
@@ -26,6 +28,7 @@ export default class PropertiesArea extends React.PureComponent<{
 
         return <div className={prefix("properties-area")}>
             <Folder<ItemInfo>
+                ref={ref(this, "folder")}
                 infos={timelineInfo!.rootInfo.children}
                 idProperty={"key"}
                 pathProperty={"key"}
@@ -52,33 +55,44 @@ export default class PropertiesArea extends React.PureComponent<{
     private _renderProperty = (props: FileProps<ItemInfo>) => {
         const {
             name,
-            scope,
-            path,
+            // scope,
+            // path,
             info,
         } = props;
 
         const {
             isFrame,
             isItem,
+            isOption,
             names,
         } = info;
         const isAdd = isItem || (isFrame && isRole(names));
 
         return (
-            <div className={prefix("property")}>
+            <div className={prefix("property", isOption ? "option" : "")}>
                 <div className={prefix("name")}>{name}</div>
-                <div className={prefix("remove")} onClick={e => {
+                <div className={prefix("remove")} onClick={() => {
                     this._onClickRemove(info);
                 }}></div>
-                <div className={prefix("value")}>{isAdd ? this._renderAdd(info) : this._renderInput(info)}</div>
+                <div className={prefix("value")}>{this._renderValue(info, isAdd)}</div>
             </div>
         );
     }
-    private _renderAdd(info: ItemInfo) {
-        return <span className={prefix("add")}></span>;
-    }
-    private _renderInput(info: ItemInfo) {
-        return <input />;
+    private _renderValue(info: ItemInfo, isAdd?: boolean) {
+        const {
+            isOption,
+            optionName,
+            scene,
+        } = info;
+
+        if (isOption && !optionName) {
+            return;
+        }
+        if (isAdd) {
+            return <span className={prefix("add")} ></span>;
+        } else {
+            return <input ref={ref(info, "element")} defaultValue={isOption ? (scene as any)[camelize(`get ${optionName}`)](): ""}/>;
+        }
     }
     private _dragCondition = (e: OnDragStart) => {
         const target = e.inputEvent.target;
@@ -88,9 +102,11 @@ export default class PropertiesArea extends React.PureComponent<{
     private _onMove = (e: OnMove<ItemInfo>) => {
         const timeline = this.props.timeline;
         const parentInfo = e.parentInfo;
-        const orders = e.children.map(info => info.name);
+        const orders = e.children.filter(info => !info.isOption).map(info => info.name);
 
         if (!parentInfo) {
+            (this.props.timeline.getScene()! as Scene).setOrders(orders);
+            timeline.update();
             return;
         }
         const {
@@ -101,8 +117,11 @@ export default class PropertiesArea extends React.PureComponent<{
             scene,
         } = parentInfo.info;
 
+        if (isScene) {
+            scene.setOrders([], orders);
+            timeline.update();
+        }
         if (isItem || isFrame) {
-            console.log(names, orders);
             scene.setOrders(names, orders);
             timeline.update();
         }

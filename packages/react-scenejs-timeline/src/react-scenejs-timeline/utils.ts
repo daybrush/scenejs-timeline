@@ -1,7 +1,7 @@
 import {
     PREFIX,
 } from "./consts";
-import Scene, { SceneItem, NAME_SEPARATOR, isScene, isSceneItem, AnimatorState, Frame, animate } from "scenejs";
+import Scene, { SceneItem, NAME_SEPARATOR, isScene, isSceneItem, AnimatorState, Frame } from "scenejs";
 import {
     hasClass as hasClass2,
     addClass as addClass2,
@@ -276,7 +276,7 @@ export function getItemProperties(
         const frameInfos = getFrameInfos(entries.map(([time, iterationTime]) => {
             const value = item.get(iterationTime, ...names);
             if (isUndefined(value)) {
-                return;
+                return undefined;
             }
             return [time, iterationTime, value];
         }), originalDuration, true);
@@ -302,11 +302,47 @@ export function getItemProperties(
         infoMap[key] = info;
 
         return info;
-    };
+    }
 
     return item.getOrders([])!.map(name => {
         return getProperties([name]);
     });
+}
+
+export function getItemOptions(names: string[], scene: Scene | SceneItem, parentScene: Scene | undefined) {
+    const parentOptionItem = makeOptionItem("options", "⚙️ Options", names, true);
+
+
+    function makeOptionItem(key: string, name: string, names: Array<string | number>, isParent?: boolean) {
+        const nextNames = [...names, key];
+        const info: ItemInfo = {
+            key: nextNames.join(NAME_SEPARATOR),
+            keys: nextNames,
+            name,
+            names: [],
+            isItem: false,
+            isScene: false,
+            isOption: true,
+            optionName: isParent ? "" : key,
+            parentScene,
+            scene,
+            children: [],
+            frames: [],
+            frameLines: [],
+        };
+
+        return info;
+    }
+
+    const children = parentOptionItem.children;
+    const keys = parentOptionItem.keys;
+
+    children.push(makeOptionItem("direction", "⚙️ direction", keys));
+    children.push(makeOptionItem("fillMode", "⚙️ fillMode", keys));
+    children.push(makeOptionItem("easing", "⚙️ easing", keys));
+
+
+    return parentOptionItem;
 }
 export function getFrameInfos(entries: Array<any[] | undefined>, duration: number, isFrame?: boolean) {
     const frames: Keyframe[] = [];
@@ -354,9 +390,10 @@ export function getTimelineInfo(scene: Scene | SceneItem): TimelineInfo {
         const length = items.length;
         const lastItem = items[length - 1];
         const names = items.map((item) => `${item.getId()}`);
-        const name = lastItem.getId();
+        const name = lastItem.getId() || (length === 1 ? "Root" : "");
         const key = names.join(NAME_SEPARATOR);
         const duration = lastItem.getDuration();
+        const parentScene = items[length - 2] as Scene;
         let children: ItemInfo[] = [];
         let info: ItemInfo;
 
@@ -373,14 +410,15 @@ export function getTimelineInfo(scene: Scene | SceneItem): TimelineInfo {
                 names,
                 isItem: false,
                 isScene: true,
-                parentScene: items[length - 2] as Scene,
+                parentScene,
                 scene: lastItem,
                 children,
                 ...frameInfos,
             };
-            lastItem.forEach((item: Scene | SceneItem, _) => {
+            lastItem.forEach((item: Scene | SceneItem) => {
                 children.push(sceneForEach(...items, item));
             });
+            children.push(getItemOptions(names, scene, parentScene));
         } else {
             const times = lastItem.times.slice();
             !lastItem.getFrame(0) && times.unshift(0);
@@ -390,7 +428,9 @@ export function getTimelineInfo(scene: Scene | SceneItem): TimelineInfo {
             const frameInfos = getFrameInfos(entries.map(([time, iterationTime]) => {
                 return [time, iterationTime, lastItem.getFrame(iterationTime)];
             }), duration);
+
             children = getItemProperties(infoMap, items, names, lastItem);
+            children.push(getItemOptions(names, scene, parentScene));
             info = {
                 key,
                 keys: names,
@@ -398,7 +438,7 @@ export function getTimelineInfo(scene: Scene | SceneItem): TimelineInfo {
                 names: [],
                 isItem: true,
                 isScene: false,
-                parentScene: items[length - 2] as Scene,
+                parentScene,
                 scene: lastItem,
                 children,
                 ...frameInfos,

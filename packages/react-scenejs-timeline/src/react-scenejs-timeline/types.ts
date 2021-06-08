@@ -1,5 +1,4 @@
-import Scene, { SceneItem, Frame } from "scenejs";
-import { IObject } from "@daybrush/utils";
+import Scene, { SceneItem } from "scenejs";
 import { HTMLAttributes } from "react";
 
 export interface SelectEvent {
@@ -38,6 +37,7 @@ export interface TimelineState {
  */
 export interface ItemInfo {
     key: string;
+    element?: HTMLElement;
     keys: Array<string | number>;
     name: string | number;
     names: Array<string | number>;
@@ -45,6 +45,8 @@ export interface ItemInfo {
     isScene: boolean;
     isItem: boolean;
     isFrame?: boolean;
+    isOption?: boolean;
+    optionName?: string;
 
     parentScene?: Scene;
     scene: Scene | SceneItem;

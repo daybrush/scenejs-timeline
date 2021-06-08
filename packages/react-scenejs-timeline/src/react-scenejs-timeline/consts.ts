@@ -6,12 +6,12 @@ export const CSS = prefixCSS(PREFIX, `
     position: relative;
     width: 100%;
     font-size: 0;
-    background: #000;
     display: flex;
     flex-direction: column;
     --${PREFIX}background-color: #333;
     --${PREFIX}border-color: #666;
     --${PREFIX}time: 0;
+    background: var(--${PREFIX}background-color);
 }
 * {
     font-family: sans-serif;
@@ -31,7 +31,6 @@ export const CSS = prefixCSS(PREFIX, `
   top: 0;
   height: 30px;
   min-height: 30px;
-  border-bottom: 1px solid var(--scenejs-timeline-border-color);
 }
 .top-area .keyframes {
   padding: 0px;
@@ -57,6 +56,9 @@ export const CSS = prefixCSS(PREFIX, `
 /*
 Control Area
 */
+.control-area {
+    border-bottom: 1px solid var(--scenejs-timeline-border-color);
+}
 .time-area {
     position: absolute;
     top: 0;
@@ -71,37 +73,7 @@ Control Area
     background: transparent;
     outline: 0;
 }
-/*
-Header Area
-*/
-.header-area .keyframes-area::-webkit-scrollbar {
-    display: none;
-}
-.header-area .keyframe-cursor {
-    position: absolute;
-    border-top: 10px solid #4af;
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-    width: 0;
-    height: 0;
-    bottom: 0;
-    top: auto;
-    background: none;
-    cursor: pointer;
-    will-change: transform;
-}
-.keyframes-scroll-area .keyframe-cursor {
-    position: absolute;
-    top: 0;
-    z-index: 1;
-    background: #4af;
-    width: 1px;
-    height: 100%;
-    left: 0px;
-    transform: translate(-50%);
-    pointer-events: none;
-    will-change: transform;
-}
+
 .control-area .keyframes-area {
     background: var(--${PREFIX}background-color);
 }
@@ -159,44 +131,54 @@ Header Area
     transform: translate(0, -50%);
     background: white;
 }
-.keytime {
-  position: relative;
-  display: inline-block;
-  height: 100%;
-  font-size: 13px;
-  font-weight: bold;
-  color: #777;
+/*
+Header Area
+*/
+.header-area .border {
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    background: var(--scenejs-timeline-border-color);
+    bottom: 0px;
+    left: 0px;
 }
-.keytime:last-child {
-  max-width: 0px;
+.header-area .properties-area {
+    border-bottom: 1px solid var(--scenejs-timeline-border-color);
 }
-.keytime span {
-  position: absolute;
-  line-height: 1;
-  bottom: 12px;
-  display: inline-block;
-  transform: translate(-50%);
-  color: #eee;
+.header-area .keyframes-area::-webkit-scrollbar {
+    display: none;
 }
-.keytime .graduation {
-  position: absolute;
-  bottom: 0;
-  width: 1px;
-  height: 10px;
-  background: #666;
-  transform: translate(-50%);
+.header-area .keyframe-cursor {
+    position: absolute;
+    border-top: 10px solid #4af;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    width: 0;
+    height: 0;
+    bottom: 0;
+    top: auto;
+    background: none;
+    cursor: pointer;
+    will-change: transform;
 }
-.keytime .graduation.half {
-  left: 50%;
-  height: 7px;
+.keyframes-scroll-area .keyframe-cursor {
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    background: #4af;
+    width: 1px;
+    height: 100%;
+    left: 0px;
+    transform: translate(-50%);
+    pointer-events: none;
+    will-change: transform;
 }
-.keytime .graduation.quarter {
-  left: 25%;
-  height: 5px;
-}
-.keytime .graduation.quarter3 {
-  left: 75%;
-  height: 5px;
+.top-area .duration {
+    position: absolute;
+    height: 2px;
+    left: 0;
+    bottom: 0px;
+    background: #4fa;
 }
 .scroll-area {
   position: relative;
@@ -215,7 +197,7 @@ Header Area
     display: none;
 }
 .properties-area {
-  width: 250px;
+  width: 300px;
   box-sizing: border-box;
   background: #333;
   border-right: 1px solid var(--scenejs-timeline-border-color);
@@ -223,8 +205,8 @@ Header Area
 
 .property {
     position: relative;
-    height: 34px;
-    line-height: 30px;
+    height: 32px;
+    line-height: 28px;
     box-sizing: border-box;
     white-space: nowrap;
     z-index: 1;
@@ -233,6 +215,12 @@ Header Area
     color: #eee;
     display: flex;
     padding: 2px 0px;
+}
+.property.root .name {
+    color: #4fa;
+}
+.property.option .name {
+    color: #fa4;
 }
 .name {
     position: relative;
@@ -306,7 +294,7 @@ Header Area
     margin-left: 10px;
     box-sizing: border-box;
 }
-.property:hover .remove {
+.property:not(.option):hover .remove {
     display: block;
 }
 .property .remove:before, .property .remove:after {
@@ -370,14 +358,12 @@ Header Area
     border-top-color: rgba(255, 255, 255, 0.2);
     z-index: 0;
 }
+.root .keyframe-group {
+    background: #4fa;
+}
 .keyframe-delay {
     height: calc(100% - 6px);
     background: #4af;
     opacity: 0.2;
-}
-@media screen and (max-width: 450px) {
-    .properties-area {
-        width: 150px;
-    }
 }
 `);

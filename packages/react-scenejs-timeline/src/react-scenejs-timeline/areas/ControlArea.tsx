@@ -16,7 +16,7 @@ export default class ControlArea extends React.PureComponent<{
         return (
             <div className={prefix("control-area", "top-area")}>
                 <div className={prefix("properties-area")}>
-                    <div className={prefix("property")}>Name</div>
+                    <div className={prefix("property")} onClick={this._unselect}></div>
                 </div>
                 <div className={prefix("keyframes-area")}>
                     <input className={prefix("time-area")} ref={ref(this, "timeAreaElement")} />
@@ -32,16 +32,16 @@ export default class ControlArea extends React.PureComponent<{
         );
     }
     public componentDidMount() {
-        this.initScene(this.props.scene);
+        this._initScene(this.props.scene);
     }
     public componentDidUpdate(prevProps: ControlArea["props"]) {
         if (prevProps.scene !== this.props.scene) {
-            this.initScene(this.props.scene);
-            this.releaseScene(prevProps.scene);
+            this._initScene(this.props.scene);
+            this._releaseScene(prevProps.scene);
         }
     }
     public componentWillUnmount() {
-        this.releaseScene(this.props.scene);
+        this._releaseScene(this.props.scene);
     }
 
     public updateTime(time: number) {
@@ -50,7 +50,7 @@ export default class ControlArea extends React.PureComponent<{
         const milisecond = numberFormat(Math.floor((time % 1) * 100), 3, true);
         this.timeAreaElement.value = `${minute}:${second}:${milisecond}`;
     }
-    private initScene(scene?: Animator | null) {
+    private _initScene(scene?: Animator | null) {
         if (!scene) {
             return;
         }
@@ -59,7 +59,7 @@ export default class ControlArea extends React.PureComponent<{
             paused: this._updateState,
         });
     }
-    private releaseScene(scene?: Animator | null) {
+    private _releaseScene(scene?: Animator | null) {
         if (!scene) {
             return;
         }
@@ -78,5 +78,8 @@ export default class ControlArea extends React.PureComponent<{
     }
     private _next = () => {
         this.props.timeline.next();
+    }
+    private _unselect = () => {
+        this.props.timeline.scrollArea.unselect();
     }
 }

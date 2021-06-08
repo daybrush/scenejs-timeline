@@ -1,14 +1,13 @@
 import { TimelineProps, TimelineState } from "./types";
 import * as React from "react";
-import { CSS, PREFIX } from "./consts";
+import { CSS } from "./consts";
 import {
     prefix,
     getTimelineInfo,
     getCurrentFlattedFrames,
-    numberFormat,
     checkInput,
 } from "./utils";
-import Scene, { SceneItem, ROLES, isScene, NAME_SEPARATOR } from "scenejs";
+import Scene, { SceneItem, isScene, NAME_SEPARATOR } from "scenejs";
 import styled, { StyledElement } from "react-css-styled";
 import ControlArea from "./areas/ControlArea";
 import HeaderArea from "./areas/HeaderArea";
@@ -50,14 +49,14 @@ export default class Timeline extends React.PureComponent<TimelineProps, Timelin
         const {
             scene,
             className,
-            keyboard,
-            onSelect,
+            // keyboard,
+            // onSelect,
             ...attributes
         } = this.props;
         const {
             zoom,
             alt,
-            maxDuration,
+            // maxDuration,
             maxTime,
             timelineInfo,
             selectedKeys,
@@ -110,6 +109,10 @@ export default class Timeline extends React.PureComponent<TimelineProps, Timelin
     public getTime() {
         const scene = this.props.scene;
         return scene ? scene.getTime() : 0;
+    }
+    public getDuration() {
+        const scene = this.props.scene;
+        return scene ? scene.getDuration() : 0;
     }
     public setTime(time: number) {
         const scene = this.props.scene;
@@ -213,19 +216,38 @@ export default class Timeline extends React.PureComponent<TimelineProps, Timelin
         const frames = isScene(scene)
             ? getCurrentFlattedFrames(scene)
             : { [scene.getId()]: scene.getCurrentFrame() };
+        const propertiesFolder = this.scrollArea.propertiesArea.folder;
 
-        // for (const id in frames) {
-        //     const frame = frames[id];
-        //     const fullOrders = frame.getFullOrders([], true);
-        //     fullOrders.forEach(names => {
-        //         const fullId = [id, ...names].join(NAME_SEPARATOR);
-        //         const fileInput = document.querySelector<HTMLInputElement>(`[data-file-path="${fullId}"] input`);
 
-        //         if (fileInput) {
-        //             fileInput.value = frame.get(...names);
-        //         }
-        //     });
-        // }
+        for (const id in frames) {
+            const frame = frames[id];
+            const fullOrders = frame.getFullOrders([], true);
+            fullOrders.forEach(names => {
+                const fullNames = [id, ...names];
+                const fullId = [id, ...names].join(NAME_SEPARATOR);
+
+                const fullNamesLength = fullNames.length;
+
+                for (let i = 1; i <= fullNamesLength; ++i) {
+                    const parentId = fullNames.slice(0, i).join(NAME_SEPARATOR);
+
+                    if (propertiesFolder.isFolded(parentId)) {
+                        return;
+                    }
+                }
+                const file = propertiesFolder.findFile(fullId);
+
+                if (!file) {
+                    return;
+                }
+                const info = file.getInfo();
+
+                if (!info.element) {
+                    return;
+                }
+                (info.element as HTMLInputElement).value = frame.get(...names);
+            });
+        }
         this.updateCursor();
         const time = scene.getTime();
         this.controlArea.updateTime(time);

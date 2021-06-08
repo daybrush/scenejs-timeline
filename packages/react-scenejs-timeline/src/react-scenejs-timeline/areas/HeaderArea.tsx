@@ -48,8 +48,13 @@ export default class HeaderArea extends React.PureComponent<{
                         scrollPos={scrollLeft}
                         style={{
                             width: "100%",
-                            height: "100%",
+                            height: "calc(100% - 1px)",
                         }} />
+                    <div className={prefix("border")}></div>
+                    <div className={prefix("duration")} style={{
+                        width: `${zoom * timeline.getDuration()}px`,
+                        transform: `translate(${-scrollLeft * zoom}px)`,
+                    }}></div>
                     <div className={prefix("keyframe-cursor")}
                         ref={ref(this, "cursorElement")}
                         style={{
